@@ -1,11 +1,12 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, useMemo, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/app/components/ui/layout/Navbar";
 import Footer from "@/app/components/ui/layout/Footer";
 import Container from "@/app/components/ui/ui/Container";
 import Button from "@/app/components/ui/ui/Button";
+import { getStoredUser, getToken } from "@/services/authService";
 
 type Room = {
   _id: string;
@@ -30,17 +31,30 @@ const initialForm: BookingForm = {
   guests: "1",
 };
 
-export default function BookingPage() {
+function BookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const roomId = searchParams.get("roomId");
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const [room, setRoom] = useState<Room | null>(null);
-  const [form, setForm] = useState<BookingForm>(initialForm);
+  const storedUser = getStoredUser();
+
+  const initialFormState = useMemo<BookingForm>(
+    () => ({
+      ...initialForm,
+      name: storedUser?.name || initialForm.name,
+      email: storedUser?.email || initialForm.email,
+      checkIn: searchParams.get("checkIn") || "",
+      checkOut: searchParams.get("checkOut") || "",
+      guests: searchParams.get("guests") || "1",
+    }),
+    [searchParams, storedUser?.email, storedUser?.name]
+  );
+
+  const [form, setForm] = useState<BookingForm>(initialFormState);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (!roomId) return;
@@ -57,9 +71,16 @@ export default function BookingPage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const token = getToken();
 
     if (!roomId) {
       setError("Missing room id. Please go back and select a room again.");
+      return;
+    }
+
+    if (!token) {
+      setError("Please login first to create a booking.");
+      router.push("/login");
       return;
     }
 
@@ -70,12 +91,14 @@ export default function BookingPage() {
 
     setSubmitting(true);
     setError("");
-    setSuccess("");
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           room: roomId,
           name: form.name,
@@ -91,8 +114,7 @@ export default function BookingPage() {
       if (!response.ok) {
         setError(data.message || "Booking failed.");
       } else {
-        setSuccess("Booking created successfully.");
-        setForm(initialForm);
+        router.push("/bookings");
       }
     } catch {
       setError("Could not connect to backend.");
@@ -117,75 +139,51 @@ export default function BookingPage() {
             </div>
 
             {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
-            {success ? <p className="mt-4 text-sm text-green-700">{success}</p> : null}
 
-            <form onSubmit={onSubmit} className="mt-6 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
-              <input
-                name="name"
-                type="text"
-                placeholder="Full name"
-                value={form.name}
-                onChange={onChange}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"
-              />
-
-              <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={onChange}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  name="checkIn"
-                  type="date"
-                  value={form.checkIn}
-                  onChange={onChange}
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"
-                />
-
-                <input
-                  name="checkOut"
-                  type="date"
-                  value={form.checkOut}
-                  onChange={onChange}
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"
-                />
-              </div>
-
-              <select
-                name="guests"
-                value={form.guests}
-                onChange={onChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white"
-              >
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <option key={n} value={n}>
-                    {n} {n === 1 ? "Guest" : "Guests"}
-                  </option>
-                ))}
-              </select>
-
-              <div className="flex gap-3">
-                <Button type="button" variant="secondary" onClick={() => router.push("/rooms")}>
-                  Back to Rooms
-                </Button>
-                <Button type="submit" disabled={submitting || !roomId}>
-                  {submitting ? "Submitting..." : "Confirm Booking"}
+            {!roomId ? (
+              <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-6 text-sm text-yellow-900">
+                <p className="font-semibold">No room selected yet.</p>
+                <p className="mt-2 text-sm text-yellow-900/90">
+                  Please choose a room first from the rooms list so we can complete your booking.
+                </p>
+                <Button type="button" variant="primary" className="mt-4" onClick={() => router.push("/rooms")}>
+                  Select a room
                 </Button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={onSubmit} className="mt-6 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+                <input name="name" type="text" placeholder="Full name" value={form.name} onChange={onChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+                <input name="email" type="email" placeholder="Email" value={form.email} onChange={onChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input name="checkIn" type="date" value={form.checkIn} onChange={onChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+                  <input name="checkOut" type="date" value={form.checkOut} onChange={onChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm" />
+                </div>
+
+                <select name="guests" value={form.guests} onChange={onChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white">
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={n}>{n} {n === 1 ? "Guest" : "Guests"}</option>
+                  ))}
+                </select>
+
+                <div className="flex gap-3">
+                  <Button type="button" variant="secondary" onClick={() => router.push("/rooms")}>Back to Rooms</Button>
+                  <Button type="submit" disabled={submitting || !roomId}>{submitting ? "Submitting..." : "Confirm Booking"}</Button>
+                </div>
+              </form>
+            )}
           </div>
         </Container>
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-b from-green-50/30 to-white pt-24" />}>
+      <BookingPageContent />
+    </Suspense>
   );
 }
