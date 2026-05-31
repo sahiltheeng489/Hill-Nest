@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const Room = require("../models/Room");
 
-const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+const isValidEmail = (email) =>
+  typeof email === "string" && /\S+@\S+\.\S+/.test(email);
+
 const ACTIVE_BOOKING_STATUSES = ["pending", "confirmed"];
 
 const hasRoomConflict = async ({ room, checkIn, checkOut, excludeBookingId }) => {
@@ -37,11 +39,6 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    const roomExists = await Room.findById(room);
-    if (!roomExists) {
-      return res.status(404).json({ message: "Room not found" });
-    }
-
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
@@ -58,6 +55,11 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: "Guests must be a positive integer" });
     }
 
+    const roomExists = await Room.findById(room);
+    if (!roomExists) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
     const conflictExists = await hasRoomConflict({
       room,
       checkIn: checkInDate,
@@ -71,8 +73,8 @@ const createBooking = async (req, res) => {
     const booking = await Booking.create({
       user: req.user._id,
       room,
-      name,
-      email,
+      name: String(name).trim(),
+      email: String(email).trim().toLowerCase(),
       checkIn: checkInDate,
       checkOut: checkOutDate,
       guests: normalizedGuests,
@@ -86,7 +88,8 @@ const createBooking = async (req, res) => {
 
 const getBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user._id }).populate("room").sort({ createdAt: -1 });
+    const filter = req.user?.role === "admin" ? {} : { user: req.user._id };
+    const bookings = await Booking.find(filter).populate("room").sort({ createdAt: -1 });
     return res.json(bookings);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -106,7 +109,7 @@ const getBookingById = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    if (booking.user.toString() !== req.user._id.toString()) {
+    if (req.user?.role !== "admin" && booking.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Forbidden: you can only access your own bookings" });
     }
 

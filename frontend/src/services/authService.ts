@@ -5,11 +5,17 @@ export type AuthUser = {
   name: string;
   email: string;
   role: "user" | "admin";
+  emailVerified: boolean;
 };
 
 export type AuthResponse = {
   token: string;
   user: AuthUser;
+  emailVerification?: {
+    required: boolean;
+    expiresIn: string;
+    devUrl: string;
+  };
 };
 
 type LoginPayload = {
@@ -30,6 +36,7 @@ async function requestAuth(
 ) {
   const response = await fetch(buildApiUrl(endpoint), {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -87,20 +94,54 @@ export function logoutUser() {
 
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+
+  void fetch(`${API_BASE_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+}
+
+export async function refreshSession() {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    logoutUser();
+    throw new Error(data.message || "Session refresh failed");
+  }
+
+  saveAuth(data);
+  return data as AuthResponse;
 }
 
 export async function getProfile() {
-  const token = getToken();
+  let token = getToken();
 
   if (!token) {
-    throw new Error("You must be logged in to view your profile");
+    const session = await refreshSession();
+    token = session.token;
   }
 
-  const response = await fetch(buildApiUrl("/profile"), {
+  let response = await fetch(buildApiUrl("/profile"), {
+    credentials: "include",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  if (response.status === 401) {
+    const session = await refreshSession();
+    response = await fetch(`${API_BASE_URL}/profile`, {
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${session.token}`,
+      },
+    });
+  }
 
   const data = await response.json();
 

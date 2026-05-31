@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Button from "@/app/components/ui/ui/Button";
 
 interface Amenity {
   icon: string;
@@ -20,6 +22,7 @@ interface RoomProps {
   reviews?: number;
   onBook?: (roomId?: string, title?: string) => void;
   isBooking?: boolean;
+  bookHref?: string;
 }
 
 const defaultAmenities: Amenity[] = [
@@ -33,12 +36,15 @@ export default function RoomCard({
   roomId,
   title,
   price,
-  image,
+  image = "img.jpg",
   description = "Cozy interiors with premium comfort, modern furnishings, and scenic mountain views from every window.",
   amenities = defaultAmenities,
   badge,
   rating = 4.9,
   reviews = 48,
+  onBook,
+  isBooking = false,
+  bookHref,
 }: RoomProps) {
   const router = useRouter();
   const safeImage = image || "room-deluxe.png";
@@ -53,9 +59,36 @@ export default function RoomCard({
     }
   };
 
+  const actionButton = onBook ? (
+    <Button
+      id={`book-btn-${roomId || title.replace(/\s+/g, "-").toLowerCase()}`}
+      onClick={() => onBook?.(roomId, title)}
+      disabled={isBooking}
+      aria-label={`Book ${title}`}
+      size="sm"
+    >
+      {isBooking ? (
+        <>
+          <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+          Booking…
+        </>
+      ) : (
+        "Book Room"
+      )}
+    </Button>
+  ) : bookHref ? (
+    <Link
+      href={bookHref}
+      className="inline-flex rounded-xl bg-gradient-to-r from-green-700 to-green-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-green-900/20 transition hover:from-green-600 hover:to-green-500"
+    >
+      Book
+    </Link>
+  ) : null;
+
   return (
-    <article className="group bg-white rounded-3xl shadow-md shadow-gray-200/80 hover:-translate-y-2 hover:shadow-2xl hover:shadow-gray-200 transition-all duration-300 overflow-hidden border border-gray-100/60 flex flex-col">
+    <article className="group bg-white rounded-3xl shadow-md shadow-gray-200/80 hover:-translate-y-2 hover:shadow-2xl hover:shadow-gray-200 transition-all duration-400 overflow-hidden border border-gray-100/60 flex flex-col">
       {/* Image */}
+>>>>>>> 6c7e99b (Add auth scaling and admin route protection)
       <div className="relative overflow-hidden h-60 flex-shrink-0">
         <Image
           src={imageSrc}
@@ -77,14 +110,18 @@ export default function RoomCard({
           {rating}
           <span className="text-gray-400 font-normal">({reviews})</span>
         </span>
+
+        <div className="absolute inset-0 flex items-end p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+            Click to view gallery →
+          </span>
+        </div>
       </div>
 
-      {/* Content */}
       <div className="p-6 flex flex-col flex-1">
         <h3 className="text-xl font-bold text-gray-900 font-serif">{title}</h3>
         <p className="mt-2 text-sm text-gray-500 leading-relaxed">{description}</p>
 
-        {/* Amenity badges */}
         <div className="mt-4 flex flex-wrap gap-2">
           {amenities.map(({ icon, label }) => (
             <span
@@ -97,28 +134,16 @@ export default function RoomCard({
           ))}
         </div>
 
-        {/* Price & CTA */}
-        <div className="mt-auto pt-5 border-t border-gray-100 mt-6 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Starting from</p>
-            <span className="text-2xl font-extrabold text-green-700 leading-none">
-              {price}
-            </span>
-            <span className="text-xs text-gray-400 ml-1">/ night</span>
-          </div>
+              {/* Price & CTA */}
+              <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Starting from</p>
+                  <span className="text-2xl font-extrabold text-green-700 leading-none">{price}</span>
+                  <span className="text-xs text-gray-400 ml-1">/ night</span>
+                </div>
 
-          <button
-            id={`book-btn-${roomId || title.replace(/\s+/g, "-").toLowerCase()}`}
-            onClick={handleBook}
-            aria-label={`Book ${title}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-800 to-emerald-600 text-white text-sm font-semibold shadow-md shadow-green-900/20 hover:from-green-700 hover:to-emerald-500 hover:shadow-green-900/30 hover:scale-105 active:scale-95 transition-all duration-300"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Book Room
-          </button>
-        </div>
+                {actionButton}
+              </div>
       </div>
     </article>
   );

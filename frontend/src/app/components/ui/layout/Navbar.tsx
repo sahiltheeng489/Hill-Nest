@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Rooms", href: "#rooms" },
   { label: "Amenities", href: "#amenities" },
   { label: "Gallery", href: "#gallery" },
+  { label: "Scaling", href: "#scaling" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -37,6 +38,12 @@ export default function Navbar() {
     const timer = setTimeout(() => setMenuOpen(false), 0);
     return () => clearTimeout(timer);
   }, [pathname]);
+
+  useEffect(() => {
+    const syncUser = () => setUser(getStoredUser());
+    window.addEventListener("storage", syncUser);
+    return () => window.removeEventListener("storage", syncUser);
+  }, []);
 
   const isHome = pathname === "/";
   const getNavHref = (hashHref: string) => (isHome ? hashHref : `/${hashHref}`);

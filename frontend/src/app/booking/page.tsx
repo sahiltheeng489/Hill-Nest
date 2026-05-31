@@ -1,40 +1,201 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Navbar from "@/app/components/ui/layout/Navbar";
+import Footer from "@/app/components/ui/layout/Footer";
+import Container from "@/app/components/ui/ui/Container";
+import Button from "@/app/components/ui/ui/Button";
+import { getStoredUser, getToken } from "@/services/authService";
 
-function BookingRedirectContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+type Room = {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+};
 
-  useEffect(() => {
-    const query = searchParams.toString();
-    router.replace(`/bookings${query ? `?${query}` : ""}`);
-  }, [router, searchParams]);
+type BookingForm = {
+  name: string;
+  email: string;
+  checkIn: string;
+  checkOut: string;
+  guests: string;
+};
 
-  return (
-    <main className="min-h-screen bg-[#f5f7f5] pt-24 flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-12 h-12 border-3 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto" />
-        <p className="mt-4 text-gray-500 text-sm">Redirecting to secure checkout...</p>
-      </div>
-    </main>
-  );
-}
+const initialForm: BookingForm = {
+  name: "",
+  email: "",
+  checkIn: "",
+  checkOut: "",
+  guests: "1",
+};
 
 export default function BookingPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-[#f5f7f5] pt-24 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-3 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto" />
-            <p className="mt-4 text-gray-500 text-sm">Opening secure checkout...</p>
-          </div>
-        </main>
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const roomId = searchParams.get("roomId");
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+  const [room, setRoom] = useState<Room | null>(null);
+  const storedUser = getStoredUser();
+  const [form, setForm] = useState<BookingForm>({
+    ...initialForm,
+    name: storedUser?.name || initialForm.name,
+    email: storedUser?.email || initialForm.email,
+    checkIn: searchParams.get("checkIn") || "",
+    checkOut: searchParams.get("checkOut") || "",
+    guests: searchParams.get("guests") || "1",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    fetch(`${apiBaseUrl}/api/rooms/${roomId}`)
+      .then((res) => res.json())
+      .then((data: Room) => setRoom(data))
+      .catch(() => setError("Could not load selected room details."));
+  }, [apiBaseUrl, roomId]);
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      checkIn: searchParams.get("checkIn") || prev.checkIn,
+      checkOut: searchParams.get("checkOut") || prev.checkOut,
+      guests: searchParams.get("guests") || prev.guests,
+    }));
+  }, [searchParams]);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const token = getToken();
+
+    if (!roomId) {
+      setError("Missing room id. Please go back and select a room again.");
+      return;
+    }
+
+    if (!token) {
+      setError("Please login first to create a booking.");
+      router.push("/login");
+      return;
+    }
+
+    if (new Date(form.checkOut) <= new Date(form.checkIn)) {
+      setError("Check-out must be after check-in.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          room: roomId,
+          name: form.name,
+          email: form.email,
+          checkIn: form.checkIn,
+          checkOut: form.checkOut,
+          guests: Number(form.guests),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Booking failed.");
+      } else {
+        router.push("/bookings");
       }
-    >
-      <BookingRedirectContent />
-    </Suspense>
+    } catch {
+      setError("Could not connect to backend.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-gradient-to-b from-green-50/30 to-white pt-24">
+        <Container>
+          <div className="max-w-2xl mx-auto py-14">
+            <h1 className="text-3xl font-bold text-gray-900">Complete Your Booking</h1>
+            <p className="text-sm text-gray-500 mt-2">
+              {room ? `You are booking: ${room.name}` : "Select dates and guest details to confirm."}
+            </p>
+
+            <div className="mt-5 p-4 rounded-xl border border-green-100 bg-green-50 text-sm text-green-800">
+              Room ID: {roomId || "Not provided"}
+            </div>
+
+            {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+            {success ? <p className="mt-4 text-sm text-green-700">{success}</p> : null}
+
+            {!roomId ? (
+              <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-6 text-sm text-yellow-900">
+                <p className="font-semibold">No room selected yet.</p>
+                <p className="mt-2 text-sm text-yellow-900/90">
+                  Please choose a room first from the rooms list so we can complete your booking.
+                </p>
+                <Button type="button" variant="primary" className="mt-4" onClick={() => router.push("/rooms")}> 
+                  Select a room
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={onSubmit} className="mt-6 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="Full name"
+                  value={form.name}
+                  onChange={onChange}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-green-300"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  value={form.email}
+                  onChange={onChange}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-green-300"
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <input name="checkIn" type="date" value={form.checkIn} onChange={onChange} className="rounded-xl border border-gray-200 px-4 py-3" />
+                  <input name="checkOut" type="date" value={form.checkOut} onChange={onChange} className="rounded-xl border border-gray-200 px-4 py-3" />
+                </div>
+                <select name="guests" value={form.guests} onChange={onChange} className="w-36 rounded-xl border border-gray-200 px-4 py-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <option key={i} value={String(i + 1)}>{i + 1} guest{i > 0 ? "s" : ""}</option>
+                  ))}
+                </select>
+
+                <div className="flex items-center gap-3">
+                  <Button type="submit" variant="primary" disabled={submitting}>
+                    {submitting ? "Booking…" : "Confirm Booking"}
+                  </Button>
+                  <Button type="button" variant="secondary" onClick={() => router.push("/rooms")}>Change Room</Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </Container>
+      </main>
+      <Footer />
+    </>
   );
 }

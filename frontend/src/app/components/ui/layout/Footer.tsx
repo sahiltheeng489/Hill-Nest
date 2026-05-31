@@ -54,7 +54,7 @@ export default function Footer() {
       </div>
 
       <Container>
-        <div className="pt-14 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="pt-14 pb-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center text-white text-sm font-bold">
@@ -64,19 +64,20 @@ export default function Footer() {
                 Hill<span className="text-green-400">Nest</span>
               </h2>
             </div>
-            <p className="text-sm text-green-100/90 max-w-xs leading-relaxed">
+            <p className="text-sm text-green-100/90 max-w-xl leading-relaxed">
               A peaceful mountain homestay near Siliguri, West Bengal offering warm hospitality,
               comfort, and scenic valley views.
             </p>
-
-            <div className="mt-6 space-y-2.5 text-sm">
-              <a href="tel:+919876543210" className="block text-green-50 hover:text-white transition-colors font-medium">
+            <div className="mt-6 space-y-3 text-sm text-green-100/90">
+              <p className="flex items-center gap-2">
+                <span className="text-green-300">📞</span>
                 +91 98765 43210
-              </a>
-              <a href="mailto:hillnest@email.com" className="block text-green-50 hover:text-white transition-colors font-medium">
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-green-300">✉️</span>
                 hillnest@email.com
-              </a>
-              <p className="text-green-100/90">Near Sevoke Road, Siliguri, West Bengal - 734001</p>
+              </p>
+              <p>Near Sevoke Road, Siliguri, West Bengal - 734001</p>
             </div>
           </div>
 
@@ -89,7 +90,7 @@ export default function Footer() {
                     href={href}
                     className="text-sm text-green-50 hover:text-white transition-colors flex items-center gap-2 group font-medium"
                   >
-                  <span className="w-1 h-1 rounded-full bg-green-200 group-hover:bg-white transition-colors" />
+                    <span className="w-1 h-1 rounded-full bg-green-200 group-hover:bg-white transition-colors" />
                     {label}
                   </Link>
                 </li>
@@ -110,7 +111,7 @@ export default function Footer() {
 
             <div className="mt-8">
               <p className="text-white font-semibold mb-4 uppercase tracking-widest text-xs">Follow Us</p>
-              <div className="flex gap-3 text-xs">
+              <div className="flex flex-wrap gap-3 text-xs">
                 <a href="#" className="px-3 py-2 rounded-lg bg-white/15 border border-white/30 text-green-50 hover:border-white/60 hover:text-white transition-colors">
                   Instagram
                 </a>
@@ -123,7 +124,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/25 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-green-100/90">
-          <p>Copyright {new Date().getFullYear()} HillNest Homestay. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} HillNest Homestay. All rights reserved.</p>
           <p>Designed for a calm mountain stay experience.</p>
         </div>
       </Container>

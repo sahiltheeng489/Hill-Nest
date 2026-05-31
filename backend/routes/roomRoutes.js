@@ -1,5 +1,7 @@
 // Import Express
 const express = require("express");
+const { protect, authorizeRoles } = require("../middleware/authMiddleware");
+const { validateRoom, validateObjectIdParam } = require("../middleware/validationMiddleware");
 
 // Create router object
 const router = express.Router();
@@ -10,16 +12,15 @@ const {
   createRoom,
   getRoomById,
 } = require("../controllers/roomController");
-const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 
 // GET all rooms
 router.get("/", getRooms);
 
 // POST new room
-router.post("/", protect, authorizeRoles("admin"), createRoom);
+router.post("/", protect, authorizeRoles("admin"), validateRoom, createRoom);
 
 // GET single room by ID
-router.get("/:id", getRoomById);
+router.get("/:id", validateObjectIdParam("id"), getRoomById);
 
 // Export router
 module.exports = router;
