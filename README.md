@@ -260,3 +260,10 @@ curl http://localhost:5000/api/bookings \
 - Start backend before testing frontend data pages.
 - Keep `.env` files out of git.
 - Store room images in `frontend/public/` and reference by filename or URL.
+
+## Secrets Setup
+
+1. Copy `backend/.env.example` to `backend/.env`.
+2. Put your real values in `backend/.env` (Mongo URI, JWT secret, etc.).
+3. Never commit `backend/.env` to git.
+4. If any secret is exposed, rotate it immediately (MongoDB user password, JWT secret).
