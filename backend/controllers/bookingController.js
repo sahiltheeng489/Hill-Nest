@@ -42,6 +42,7 @@ const createBooking = async (req, res) => {
     }
 
     const booking = await Booking.create({
+      user: req.user._id,
       room,
       name,
       email,
@@ -58,7 +59,7 @@ const createBooking = async (req, res) => {
 
 const getBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("room");
+    const bookings = await Booking.find({ user: req.user._id }).populate("room");
     return res.json(bookings);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -76,6 +77,10 @@ const getBookingById = async (req, res) => {
     const booking = await Booking.findById(id).populate("room");
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Forbidden: you can only access your own bookings" });
     }
 
     return res.json(booking);

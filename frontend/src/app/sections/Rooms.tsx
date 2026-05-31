@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Container from "@/app/components/ui/ui/Container";
 import SectionTitle from "@/app/components/ui/ui/SectionTitle";
 import RoomCard from "@/app/components/ui/room/RoomCard";
@@ -53,6 +56,12 @@ const rooms = [
 ];
 
 export default function Rooms() {
+  const router = useRouter();
+
+  const handleBookFromHomeCards = () => {
+    router.push("/rooms");
+  };
+
   return (
     <section id="rooms" className="py-28 bg-gradient-to-b from-white to-green-50/40">
       <Container>
@@ -69,7 +78,7 @@ export default function Rooms() {
               className="animate-fade-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <RoomCard {...room} />
+              <RoomCard {...room} onBook={handleBookFromHomeCards} />
             </div>
           ))}
         </div>

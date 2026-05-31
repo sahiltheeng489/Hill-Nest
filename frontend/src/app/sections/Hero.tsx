@@ -1,3 +1,7 @@
+"use client";
+
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/app/components/ui/ui/Button";
 import Image from "next/image";
 import HomeUserBanner from "@/app/components/user/HomeUserBanner";
@@ -10,6 +14,22 @@ const stats = [
 ];
 
 export default function Hero() {
+  const router = useRouter();
+
+  const handleBookNow = useCallback(() => {
+    router.push("/rooms");
+  }, [router]);
+
+  const handleCheckAvailability = useCallback(() => {
+    const roomsSection = document.getElementById("rooms");
+
+    if (roomsSection) {
+      roomsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    router.push("/rooms");
+  }, [router]);
   return (
     <section
       id="home"
@@ -62,10 +82,10 @@ export default function Hero() {
 
             {/* CTA Buttons */}
             <div className="mt-8 flex flex-col items-start gap-4 animate-fade-up delay-300">
-              <Button id="hero-book-btn" variant="primary" size="lg">
+              <Button id="hero-book-btn" variant="primary" size="lg" onClick={handleBookNow}>
                 Book Now
               </Button>
-              <Button id="hero-check-btn" variant="secondary" size="lg">
+              <Button id="hero-check-btn" variant="secondary" size="lg" onClick={handleCheckAvailability}>
                 Check Availability
               </Button>
             </div>

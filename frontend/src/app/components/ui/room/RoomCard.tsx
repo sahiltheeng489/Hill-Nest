@@ -12,7 +12,7 @@ interface RoomProps {
   roomId?: string;
   title: string;
   price: string;
-  image: string;
+  image?: string;
   description?: string;
   amenities?: Amenity[];
   badge?: string;
@@ -42,8 +42,11 @@ export default function RoomCard({
   onBook,
   isBooking = false,
 }: RoomProps) {
+  const resolvedImage = image?.trim() ? image : "img.jpg";
   const imageSrc =
-    image.startsWith("http") || image.startsWith("/") ? image : `/${image}`;
+    resolvedImage.startsWith("http") || resolvedImage.startsWith("/")
+      ? resolvedImage
+      : `/${resolvedImage}`;
 
   return (
     <article className="group bg-white rounded-3xl shadow-md shadow-gray-200/80 hover:-translate-y-2 hover:shadow-2xl hover:shadow-gray-200 transition-all duration-400 overflow-hidden border border-gray-100/60 flex flex-col">

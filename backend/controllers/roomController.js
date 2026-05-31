@@ -1,5 +1,6 @@
 // Import the Room model so we can interact with MongoDB
 const Room = require("../models/Room");
+const Booking = require("../models/Booking");
 
 /**
  * @desc    Get all rooms
@@ -8,10 +9,62 @@ const Room = require("../models/Room");
  */
 const getRooms = async (req, res) => {
   try {
-    // Fetch all room documents from MongoDB
-    const rooms = await Room.find();
+    const {
+      minPrice,
+      maxPrice,
+      checkIn,
+      checkOut,
+      available,
+      search,
+    } = req.query;
 
-    // Send rooms back to the frontend as JSON
+    const query = {};
+
+    if (minPrice) {
+      query.price = { ...query.price, $gte: Number(minPrice) };
+    }
+
+    if (maxPrice) {
+      query.price = { ...query.price, $lte: Number(maxPrice) };
+    }
+
+    if (available === "true") {
+      query.available = true;
+    }
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    if (req.query.roomType) {
+      query.roomType = req.query.roomType;
+    }
+
+    if (checkIn && checkOut) {
+      const from = new Date(checkIn);
+      const to = new Date(checkOut);
+
+      if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) {
+        return res.status(400).json({
+          message: "Invalid check-in or check-out date range.",
+        });
+      }
+
+      const overlappingBookings = await Booking.find({
+        checkIn: { $lt: to },
+        checkOut: { $gt: from },
+      }).select("room");
+
+      const unavailableRoomIds = overlappingBookings.map((booking) => booking.room);
+
+      if (unavailableRoomIds.length > 0) {
+        query._id = { $nin: unavailableRoomIds };
+      }
+    }
+
+    const rooms = await Room.find(query);
+
+    // Send filtered rooms back to the frontend as JSON
     res.json(rooms);
   } catch (error) {
     // Handle unexpected server/database errors

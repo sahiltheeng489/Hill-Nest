@@ -1,161 +1,130 @@
+import Link from "next/link";
 import Container from "@/app/components/ui/ui/Container";
 import Button from "@/app/components/ui/ui/Button";
 
 const quickLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Our Rooms", href: "#rooms" },
-  { label: "Amenities", href: "#amenities" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/#home" },
+  { label: "Our Rooms", href: "/#rooms" },
+  { label: "Amenities", href: "/#amenities" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "Contact", href: "/#contact" },
+  { label: "Bookings", href: "/bookings" },
 ];
 
 const policies = [
   { label: "Check-in: 12:00 PM" },
   { label: "Check-out: 11:00 AM" },
-  { label: "No smoking inside" },
-  { label: "Pets on request" },
+  { label: "No smoking inside rooms" },
+  { label: "Pets allowed on request" },
 ];
 
 export default function Footer() {
   return (
-    <footer id="contact" className="bg-gradient-to-br from-gray-950 via-green-950/40 to-gray-950 text-gray-400">
-      {/* CTA Banner */}
-      <div className="border-b border-white/5">
+    <footer id="contact" className="bg-gradient-to-b from-green-900 via-green-800 to-emerald-700 text-green-50">
+      <div className="border-b border-white/20">
         <Container>
           <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-green-400 mb-2">
-                Ready to escape?
+              <p className="text-xs font-semibold uppercase tracking-widest text-green-100 mb-2">
+                Plan your stay
               </p>
               <h3 className="text-2xl md:text-3xl font-bold text-white font-serif leading-snug">
                 Book Your Mountain Retreat Today
               </h3>
-              <p className="text-gray-500 text-sm mt-1">
-                Limited rooms available. Reserve your stay now.
+              <p className="text-green-100/90 text-sm mt-1 font-medium">
+                Limited rooms available on peak dates.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
-              <Button id="footer-book-btn" variant="primary" size="md">
-                Book Now
-              </Button>
+              <Link href="/rooms">
+                <Button id="footer-book-btn" variant="primary" size="md">
+                  Book Now
+                </Button>
+              </Link>
               <a
                 href="tel:+919876543210"
                 id="footer-call-btn"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/30 text-white text-sm font-semibold hover:bg-white/15 transition-colors"
               >
-                📞 Call Us
+                Call Us
               </a>
             </div>
           </div>
         </Container>
       </div>
 
-      {/* Main Footer */}
       <Container>
         <div className="pt-14 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center">
-                <span className="text-lg">🌿</span>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center text-white text-sm font-bold">
+                HN
               </div>
               <h2 className="text-2xl font-bold text-white">
                 Hill<span className="text-green-400">Nest</span>
               </h2>
             </div>
-            <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-              A peaceful mountain homestay near Siliguri, West Bengal — offering warmth,
-              comfort, and stunning valley views since 2015.
+            <p className="text-sm text-green-100/90 max-w-xs leading-relaxed">
+              A peaceful mountain homestay near Siliguri, West Bengal offering warm hospitality,
+              comfort, and scenic valley views.
             </p>
 
-            {/* Contact info */}
             <div className="mt-6 space-y-2.5 text-sm">
-              <a
-                href="tel:+919876543210"
-                className="flex items-center gap-3 hover:text-green-400 transition-colors"
-              >
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0">📞</span>
-                <span>+91 98765 43210</span>
+              <a href="tel:+919876543210" className="block text-green-50 hover:text-white transition-colors font-medium">
+                +91 98765 43210
               </a>
-              <a
-                href="mailto:hillnest@email.com"
-                className="flex items-center gap-3 hover:text-green-400 transition-colors"
-              >
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0">✉️</span>
-                <span>hillnest@email.com</span>
+              <a href="mailto:hillnest@email.com" className="block text-green-50 hover:text-white transition-colors font-medium">
+                hillnest@email.com
               </a>
-              <div className="flex items-start gap-3">
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0 mt-0.5">📍</span>
-                <span>Near Sevoke Road, Siliguri,<br />West Bengal — 734001</span>
-              </div>
+              <p className="text-green-100/90">Near Sevoke Road, Siliguri, West Bengal - 734001</p>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">
-              Quick Links
-            </p>
+            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">Quick Links</p>
             <ul className="space-y-3">
               {quickLinks.map(({ label, href }) => (
                 <li key={label}>
-                  <a
+                  <Link
                     href={href}
-                    className="text-sm text-gray-500 hover:text-green-400 transition-colors flex items-center gap-2 group"
+                    className="text-sm text-green-50 hover:text-white transition-colors flex items-center gap-2 group font-medium"
                   >
-                    <span className="w-1 h-1 rounded-full bg-green-700 group-hover:bg-green-400 transition-colors" />
+                  <span className="w-1 h-1 rounded-full bg-green-200 group-hover:bg-white transition-colors" />
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Policies */}
           <div>
-            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">
-              House Policies
-            </p>
+            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">House Policies</p>
             <ul className="space-y-3">
               {policies.map(({ label }) => (
-                <li key={label} className="text-sm text-gray-500 flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
+                <li key={label} className="text-sm text-green-50 flex items-start gap-2 font-medium">
+                  <span className="text-green-200 mt-0.5">*</span>
                   {label}
                 </li>
               ))}
             </ul>
 
-            {/* Social */}
             <div className="mt-8">
               <p className="text-white font-semibold mb-4 uppercase tracking-widest text-xs">Follow Us</p>
-              <div className="flex gap-3">
-                {[
-                  { label: "Instagram", icon: "📸", href: "#" },
-                  { label: "Facebook", icon: "👍", href: "#" },
-                  { label: "WhatsApp", icon: "💬", href: "#" },
-                ].map(({ label, icon, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    aria-label={label}
-                    className="w-9 h-9 rounded-xl bg-white/5 hover:bg-green-700/30 border border-white/10 flex items-center justify-center text-base transition-all hover:scale-110 hover:border-green-700/40"
-                  >
-                    {icon}
-                  </a>
-                ))}
+              <div className="flex gap-3 text-xs">
+                <a href="#" className="px-3 py-2 rounded-lg bg-white/15 border border-white/30 text-green-50 hover:border-white/60 hover:text-white transition-colors">
+                  Instagram
+                </a>
+                <a href="#" className="px-3 py-2 rounded-lg bg-white/15 border border-white/30 text-green-50 hover:border-white/60 hover:text-white transition-colors">
+                  Facebook
+                </a>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-white/5 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-600">
-          <p>© {new Date().getFullYear()} HillNest Homestay. All rights reserved.</p>
-          <p className="flex items-center gap-1.5">
-            Designed with{" "}
-            <span className="text-green-500">❤️</span>{" "}
-            in the mountains of West Bengal
-          </p>
+        <div className="border-t border-white/25 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-green-100/90">
+          <p>Copyright {new Date().getFullYear()} HillNest Homestay. All rights reserved.</p>
+          <p>Designed for a calm mountain stay experience.</p>
         </div>
       </Container>
     </footer>

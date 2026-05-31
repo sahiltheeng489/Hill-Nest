@@ -21,6 +21,20 @@ export default function UserPage() {
 
     setUser(storedUser);
     setStatus("ready");
+    getProfile()
+      .then((data) => {
+        if (data?.user) {
+          setUser(data.user);
+        }
+      })
+      .catch((profileError) => {
+        setError(
+          profileError instanceof Error
+            ? profileError.message
+            : "Unable to load profile from the server."
+        );
+        setStatus("error");
+      });
   }, [router]);
 
   const handleLogout = () => {

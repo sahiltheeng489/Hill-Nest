@@ -17,21 +17,27 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(() => getStoredUser());
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    setUser(getStoredUser());
-  }, []);
-
-  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setUser(getStoredUser());
+  }, [pathname]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const isHome = pathname === "/";
+  const getNavHref = (hashHref: string) => (isHome ? hashHref : `/${hashHref}`);
 
   const handleLogout = () => {
     logoutUser();
@@ -42,7 +48,7 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+        scrolled || !isHome
           ? "bg-white/95 backdrop-blur-xl shadow-md border-b border-gray-100/80"
           : "bg-transparent"
       }`}
@@ -65,18 +71,18 @@ export default function Navbar() {
           {/* Desktop Nav Links */}
           <div className="hidden md:flex gap-7 font-medium text-sm">
             {navLinks.map(({ label, href }) => (
-              <a
+              <Link
                 key={label}
-                href={href}
+                href={getNavHref(href)}
                 className={`relative group transition-colors duration-200 ${
-                  scrolled
+                  scrolled || !isHome
                     ? "text-gray-600 hover:text-green-700"
                     : "text-white/85 hover:text-white"
                 }`}
               >
                 {label}
                 <span className="absolute -bottom-0.5 left-0 h-0.5 w-0 bg-green-500 rounded-full transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -117,6 +123,15 @@ export default function Navbar() {
                 </Link>
               </>
             )}
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+              className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700"
+            >
+              <span className="text-lg leading-none">{menuOpen ? "\u2715" : "\u2630"}</span>
+            </button>
           </div>
         </div>
       </Container>
@@ -126,14 +141,14 @@ export default function Navbar() {
         <div className="md:hidden bg-white/98 backdrop-blur-xl border-t border-gray-100 animate-fade-in">
           <div className="px-6 py-5 flex flex-col gap-4">
             {navLinks.map(({ label, href }) => (
-              <a
+              <Link
                 key={label}
-                href={href}
+                href={getNavHref(href)}
                 onClick={() => setMenuOpen(false)}
                 className="text-gray-700 font-medium hover:text-green-700 transition-colors py-1 border-b border-gray-50"
               >
                 {label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
