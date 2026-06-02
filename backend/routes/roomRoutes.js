@@ -10,12 +10,13 @@ const {
   createRoom,
   getRoomById,
 } = require("../controllers/roomController");
+const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 
 // GET all rooms
 router.get("/", getRooms);
 
 // POST new room
-router.post("/", createRoom);
+router.post("/", protect, authorizeRoles("admin"), createRoom);
 
 // GET single room by ID
 router.get("/:id", getRoomById);

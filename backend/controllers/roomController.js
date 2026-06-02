@@ -51,6 +51,7 @@ const getRooms = async (req, res) => {
       }
 
       const overlappingBookings = await Booking.find({
+        status: { $in: ["pending", "confirmed"] },
         checkIn: { $lt: to },
         checkOut: { $gt: from },
       }).select("room");

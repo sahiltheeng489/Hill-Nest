@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const paymentSchema = new mongoose.Schema(
+  {
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
+    razorpaySignature: { type: String },
+    amount: { type: Number }, // total in paise
+    currency: { type: String, default: "INR" },
+    status: {
+      type: String,
+      enum: ["created", "paid", "failed"],
+      default: "created",
+    },
+  },
+  { _id: false }
+);
+
 const bookingSchema = new mongoose.Schema(
   {
     user: {
@@ -35,6 +51,15 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "cancelled"],
+      default: "pending",
+    },
+    payment: {
+      type: paymentSchema,
+      default: null,
     },
   },
   {

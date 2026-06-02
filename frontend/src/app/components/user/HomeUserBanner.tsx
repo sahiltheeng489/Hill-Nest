@@ -1,31 +1,54 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getStoredUser } from "@/services/authService";
 
 export default function HomeUserBanner() {
-  const userName = getStoredUser()?.name || null;
+  const [user, setUser] = useState<{ name: string } | null>(null);
 
-  if (!userName) {
-    return null;
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const stored = getStoredUser();
+      setUser(stored ?? null);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!user) return null;
+
+  const initial = user.name.charAt(0).toUpperCase();
 
   return (
-    <div className="mt-10 rounded-3xl border border-green-100 bg-green-50/70 p-6 shadow-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-green-700">Welcome back</p>
-          <h3 className="mt-3 text-3xl font-bold text-gray-900">{userName}, your profile is ready.</h3>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-gray-600">
-            Continue to your personalized dashboard, check room availability, and manage your stay from one place.
+    <div className="mt-12 animate-fade-up delay-600">
+      <div className="glass rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 border border-white/20">
+        {/* Avatar */}
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-600 to-emerald-400 flex items-center justify-center text-white font-bold text-lg font-serif shadow-md flex-shrink-0">
+          {initial}
+        </div>
+
+        {/* Text */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-green-300 mb-1">
+            Welcome back
+          </p>
+          <p className="text-white font-semibold text-base truncate">
+            {user.name} — your profile is ready ✓
+          </p>
+          <p className="text-gray-400 text-xs mt-0.5">
+            Manage bookings and explore rooms from your dashboard.
           </p>
         </div>
 
+        {/* CTA */}
         <Link
           href="/user"
-          className="inline-flex rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
+          className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
         >
-          Go to profile
+          My Dashboard
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
         </Link>
       </div>
     </div>
