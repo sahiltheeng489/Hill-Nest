@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { buildApiUrl } from "@/services/api";
 import {
   getProfile,
   getStoredUser,
@@ -129,7 +130,7 @@ export default function UserPage() {
       const token = getToken();
       if (token) {
         fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || ""}/api/bookings`,
+          buildApiUrl("/bookings"),
           { headers: { Authorization: `Bearer ${token}` } }
         )
           .then((res) => (res.ok ? res.json() : []))

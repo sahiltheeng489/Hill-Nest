@@ -4,20 +4,25 @@ const Razorpay = require("razorpay");
 const Booking = require("../models/Booking");
 const Room = require("../models/Room");
 
-// Lazy-initialise Razorpay so module load never throws with missing/placeholder keys.
-// The instance is created on first use, giving a proper 500 if keys are not set.
 let _razorpay = null;
 const getRazorpay = () => {
   if (!_razorpay) {
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET ||
-        process.env.RAZORPAY_KEY_ID === "rzp_test_REPLACE_ME") {
-      throw new Error("Razorpay keys are not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to backend/.env");
+    if (
+      !process.env.RAZORPAY_KEY_ID ||
+      !process.env.RAZORPAY_KEY_SECRET ||
+      process.env.RAZORPAY_KEY_ID === "rzp_test_REPLACE_ME"
+    ) {
+      throw new Error(
+        "Razorpay keys are not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to backend/.env"
+      );
     }
+
     _razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
   }
+
   return _razorpay;
 };
 
@@ -40,20 +45,10 @@ const hasRoomConflict = async ({ room, checkIn, checkOut, excludeBookingId }) =>
   return Boolean(overlappingBooking);
 };
 
-/**
- * POST /api/payment/create-order
- *
- * Validates booking details, calculates total amount (nights × room price),
- * and creates a Razorpay order. Returns the order to the frontend so it
- * can open the Razorpay checkout modal.
- *
- * NOTE: The Booking is NOT created here — only after payment is verified.
- */
 const createOrder = async (req, res) => {
   try {
     const { room, name, email, checkIn, checkOut, guests } = req.body;
 
-    // ── Basic validation ───────────────────────────────────────────────────
     if (!room || !name || !email || !checkIn || !checkOut || guests === undefined) {
       return res.status(400).json({ message: "All booking fields are required" });
     }
@@ -66,7 +61,6 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    // ── Fetch room & validate dates ────────────────────────────────────────
     const roomDoc = await Room.findById(room);
     if (!roomDoc) {
       return res.status(404).json({ message: "Room not found" });
@@ -83,13 +77,26 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Check-out must be after check-in" });
     }
 
-    // ── Calculate amount ───────────────────────────────────────────────────
+    const normalizedGuests = Number(guests);
+    if (!Number.isInteger(normalizedGuests) || normalizedGuests < 1) {
+      return res.status(400).json({ message: "Guests must be a positive integer" });
+    }
+
+    const conflictExists = await hasRoomConflict({
+      room,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+    });
+
+    if (conflictExists) {
+      return res.status(409).json({ message: "Room is no longer available for the selected dates" });
+    }
+
     const msPerDay = 1000 * 60 * 60 * 24;
     const nights = Math.ceil((checkOutDate - checkInDate) / msPerDay);
     const totalRupees = nights * roomDoc.price;
-    const totalPaise = totalRupees * 100; // Razorpay expects paise
+    const totalPaise = totalRupees * 100;
 
-    // ── Create Razorpay order ──────────────────────────────────────────────
     const order = await getRazorpay().orders.create({
       amount: totalPaise,
       currency: "INR",
@@ -103,7 +110,7 @@ const createOrder = async (req, res) => {
 
     return res.status(201).json({
       orderId: order.id,
-      amount: order.amount,       // paise
+      amount: order.amount,
       currency: order.currency,
       keyId: process.env.RAZORPAY_KEY_ID,
       nights,
@@ -116,19 +123,12 @@ const createOrder = async (req, res) => {
   }
 };
 
-/**
- * POST /api/payment/verify
- *
- * Verifies the Razorpay payment signature using HMAC-SHA256.
- * On success, creates the Booking with status "confirmed" and payment details.
- */
 const verifyPayment = async (req, res) => {
   try {
     const {
       razorpayOrderId,
       razorpayPaymentId,
       razorpaySignature,
-      // booking data
       room,
       name,
       email,
@@ -137,7 +137,6 @@ const verifyPayment = async (req, res) => {
       guests,
     } = req.body;
 
-    // ── Validate required fields ───────────────────────────────────────────
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       return res.status(400).json({ message: "Missing payment verification fields" });
     }
@@ -154,7 +153,6 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    // ── Verify signature ───────────────────────────────────────────────────
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
@@ -164,7 +162,6 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ message: "Payment verification failed: invalid signature" });
     }
 
-    // ── Fetch room for amount calculation ──────────────────────────────────
     const roomDoc = await Room.findById(room);
     if (!roomDoc) {
       return res.status(404).json({ message: "Room not found" });
@@ -205,7 +202,6 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ message: "Payment verification failed: order details do not match booking" });
     }
 
-    // ── Check for duplicate payment (idempotency) ──────────────────────────
     const existing = await Booking.findOne({ "payment.razorpayPaymentId": razorpayPaymentId });
     if (existing) {
       if (existing.user.toString() !== req.user._id.toString()) {
@@ -224,7 +220,6 @@ const verifyPayment = async (req, res) => {
       return res.status(409).json({ message: "Room is no longer available for the selected dates" });
     }
 
-    // ── Create confirmed booking ───────────────────────────────────────────
     const booking = await Booking.create({
       user: req.user._id,
       room,

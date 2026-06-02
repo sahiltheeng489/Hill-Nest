@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { buildApiUrl } from "@/services/api";
 import { getToken } from "@/services/authService";
 
 // ── Razorpay window type augmentation ────────────────────────────────────────
@@ -40,7 +41,6 @@ export default function PaymentButton({
   const [loading, setLoading] = useState(false);
   const [scriptReady, setScriptReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
   const totalAmount = nights * pricePerNight;
 
   // ── Load Razorpay checkout script once ───────────────────────────────────
@@ -83,7 +83,7 @@ export default function PaymentButton({
 
     try {
       // ── Step 1: Create Razorpay order on backend ──────────────────────
-      const orderRes = await fetch(`${apiBaseUrl}/api/payment/create-order`, {
+      const orderRes = await fetch(buildApiUrl("/payment/create-order"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +124,7 @@ export default function PaymentButton({
           razorpay_signature: string;
         }) => {
           try {
-            const verifyRes = await fetch(`${apiBaseUrl}/api/payment/verify`, {
+            const verifyRes = await fetch(buildApiUrl("/payment/verify"), {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

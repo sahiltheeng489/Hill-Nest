@@ -120,7 +120,7 @@ cd backend
 npm install
 ```
 
-Create `backend/.env`:
+Create `backend/.env` from `backend/.env.example`:
 
 ```env
 PORT=5000
@@ -135,6 +135,12 @@ RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 AUTH_RATE_LIMIT_WINDOW_MS=600000
 AUTH_RATE_LIMIT_MAX=10
 ```
+
+Razorpay setup:
+
+- Put your Razorpay test key id into `RAZORPAY_KEY_ID`.
+- Put the matching secret you downloaded from Razorpay into `RAZORPAY_KEY_SECRET`.
+- The screenshot you shared shows a key id only; checkout will not work until the secret is also added to `backend/.env`.
 
 Run backend:
 
@@ -160,7 +166,7 @@ npm run dev
 
 Frontend default URL: `http://localhost:3000`
 
-Optional frontend env:
+Optional frontend env in `frontend/.env.local` from `frontend/.env.example`:
 
 ```env
 NEXT_PUBLIC_API_URL=
@@ -172,6 +178,7 @@ Notes:
 - The frontend now rewrites `/api/*` requests to `BACKEND_URL` or `http://127.0.0.1:5000`.
 - Leaving `NEXT_PUBLIC_API_URL` empty keeps browser requests same-origin and works well with the rewrite setup.
 - If you prefer calling the backend directly from the browser, set `NEXT_PUBLIC_API_URL=http://localhost:5000`.
+- For the simplest local Razorpay setup, keep `NEXT_PUBLIC_API_URL=` empty and keep `BACKEND_URL=http://127.0.0.1:5000`.
 
 ## Booking and Payment Flow
 
@@ -182,6 +189,16 @@ Notes:
 5. Razorpay completes checkout in the browser modal.
 6. The frontend sends payment identifiers to `POST /api/payment/verify`.
 7. The backend verifies the Razorpay signature, checks order integrity, rechecks room availability, and creates a `confirmed` booking with stored payment metadata.
+
+## Razorpay Test Checklist
+
+1. Start MongoDB and the backend on `http://localhost:5000`.
+2. Add valid Razorpay test credentials to `backend/.env`.
+3. Start the frontend on `http://localhost:3000`.
+4. Register or log in.
+5. Open a room, continue to checkout, and click the pay button.
+6. Complete the Razorpay test modal with a test payment method.
+7. Confirm the booking appears in `/bookings` with `Payment Confirmed`.
 
 ## Current Behavior Highlights
 
@@ -194,8 +211,10 @@ Notes:
 
 ## Tests Included
 
+- Payment order creation blocks unavailable rooms before checkout opens
 - Payment verification rejects mismatched Razorpay order details
 - Payment verification blocks overlapping bookings after successful payment
+- Booking updates reject user-driven status changes
 - Room creation route requires auth middleware and admin-only authorization
 
 ## Roadmap

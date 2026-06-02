@@ -138,6 +138,10 @@ const updateBooking = async (req, res) => {
       return res.status(400).json({ message: "Cancelled bookings cannot be updated" });
     }
 
+    if (status !== undefined && status !== booking.status) {
+      return res.status(403).json({ message: "Forbidden: booking status cannot be changed from this endpoint" });
+    }
+
     if (email !== undefined && !isValidEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
@@ -158,22 +162,15 @@ const updateBooking = async (req, res) => {
       return res.status(400).json({ message: "Guests must be a positive integer" });
     }
 
-    if (status !== undefined && !ACTIVE_BOOKING_STATUSES.concat("cancelled").includes(status)) {
-      return res.status(400).json({ message: "Invalid booking status" });
-    }
+    const conflictExists = await hasRoomConflict({
+      room: booking.room,
+      checkIn: nextCheckIn,
+      checkOut: nextCheckOut,
+      excludeBookingId: booking._id,
+    });
 
-    const nextStatus = status !== undefined ? status : booking.status;
-    if (nextStatus !== "cancelled") {
-      const conflictExists = await hasRoomConflict({
-        room: booking.room,
-        checkIn: nextCheckIn,
-        checkOut: nextCheckOut,
-        excludeBookingId: booking._id,
-      });
-
-      if (conflictExists) {
-        return res.status(409).json({ message: "Room is not available for the selected dates" });
-      }
+    if (conflictExists) {
+      return res.status(409).json({ message: "Room is not available for the selected dates" });
     }
 
     booking.name = name ?? booking.name;
@@ -181,7 +178,6 @@ const updateBooking = async (req, res) => {
     booking.checkIn = nextCheckIn;
     booking.checkOut = nextCheckOut;
     booking.guests = nextGuests;
-    booking.status = nextStatus;
 
     await booking.save();
     return res.json(booking);

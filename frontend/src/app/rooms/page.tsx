@@ -6,6 +6,7 @@ import Navbar from "@/app/components/ui/layout/Navbar";
 import Footer from "@/app/components/ui/layout/Footer";
 import SectionTitle from "@/app/components/ui/ui/SectionTitle";
 import Container from "@/app/components/ui/ui/Container";
+import { buildApiUrl } from "@/services/api";
 
 type Room = {
   _id: string;
@@ -41,10 +42,8 @@ export default function RoomsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/rooms`)
+    fetch(buildApiUrl("/rooms"))
       .then((res) => res.json())
       .then((data: Room[]) => {
         setRooms(data);
@@ -54,7 +53,7 @@ export default function RoomsPage() {
         setError("Could not load rooms. Please ensure the backend is running.");
         setLoading(false);
       });
-  }, [apiBaseUrl]);
+  }, []);
 
   return (
     <>

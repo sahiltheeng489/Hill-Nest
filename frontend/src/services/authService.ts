@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+import { buildApiUrl } from "@/services/api";
 
 export type AuthUser = {
   id: string;
@@ -28,7 +28,7 @@ async function requestAuth(
   endpoint: "/auth/login" | "/auth/register",
   payload: LoginPayload | RegisterPayload
 ) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const response = await fetch(buildApiUrl(endpoint), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export async function getProfile() {
     throw new Error("You must be logged in to view your profile");
   }
 
-  const response = await fetch(`${API_BASE_URL}/profile`, {
+  const response = await fetch(buildApiUrl("/profile"), {
     headers: {
       Authorization: `Bearer ${token}`,
     },

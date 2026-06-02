@@ -6,6 +6,7 @@ import Navbar from "@/app/components/ui/layout/Navbar";
 import Footer from "@/app/components/ui/layout/Footer";
 import Container from "@/app/components/ui/ui/Container";
 import PaymentButton from "@/app/components/ui/payment/PaymentButton";
+import { buildApiUrl } from "@/services/api";
 import { getStoredUser, getToken } from "@/services/authService";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -67,8 +68,6 @@ function BookingsPageContent() {
   const roomId = searchParams.get("roomId");
   const queryString = searchParams.toString();
   const loginRedirectPath = `/bookings${queryString ? `?${queryString}` : ""}`;
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   const [token, setToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
@@ -120,22 +119,22 @@ function BookingsPageContent() {
   // ── Fetch room details ───────────────────────────────────────────────────
   useEffect(() => {
     if (!roomId) return;
-    fetch(`${apiBaseUrl}/api/rooms/${roomId}`)
+    fetch(buildApiUrl(`/rooms/${roomId}`))
       .then((res) => res.json())
       .then((data: Room) => setRoom(data))
       .catch(() => setFormError("Could not load room details."));
-  }, [apiBaseUrl, roomId]);
+  }, [roomId]);
 
   // ── Fetch bookings list ──────────────────────────────────────────────────
   const fetchBookings = useCallback(async () => {
     if (!token) return;
-    const res = await fetch(`${apiBaseUrl}/api/bookings`, {
+    const res = await fetch(buildApiUrl("/bookings"), {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("Failed to fetch bookings");
     const data: Booking[] = await res.json();
     setBookings(data);
-  }, [apiBaseUrl, token]);
+  }, [token]);
 
   useEffect(() => {
     if (!authReady || !token) return;
@@ -160,7 +159,7 @@ function BookingsPageContent() {
     setActionError("");
     setCancellingId(bookingId);
     try {
-      const response = await fetch(`${apiBaseUrl}/api/bookings/${bookingId}/cancel`, {
+      const response = await fetch(buildApiUrl(`/bookings/${bookingId}/cancel`), {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
