@@ -95,14 +95,14 @@ export function logoutUser() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 
-  void fetch(`${API_BASE_URL}/auth/logout`, {
+  void fetch(buildApiUrl("/auth/logout"), {
     method: "POST",
     credentials: "include",
   });
 }
 
 export async function refreshSession() {
-  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+  const response = await fetch(buildApiUrl("/auth/refresh"), {
     method: "POST",
     credentials: "include",
   });
@@ -135,7 +135,7 @@ export async function getProfile() {
 
   if (response.status === 401) {
     const session = await refreshSession();
-    response = await fetch(`${API_BASE_URL}/profile`, {
+    response = await fetch(buildApiUrl("/profile"), {
       credentials: "include",
       headers: {
         Authorization: `Bearer ${session.token}`,

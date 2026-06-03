@@ -1,4 +1,6 @@
 
+"use client";
+
 import { useEffect, useState } from "react";
 import RoomCard from "@/app/components/ui/room/RoomCard";
 import Navbar from "@/app/components/ui/layout/Navbar";
