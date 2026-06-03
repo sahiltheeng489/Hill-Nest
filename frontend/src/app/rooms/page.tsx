@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,19 +19,19 @@ type Room = {
 function RoomCardSkeleton() {
   return (
     <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-      <div className="skeleton h-60 w-full" />
+      <div className="h-60 w-full bg-gray-100 animate-pulse" />
       <div className="p-6 space-y-3">
-        <div className="skeleton h-6 w-3/4 rounded-lg" />
-        <div className="skeleton h-4 w-full rounded-lg" />
-        <div className="skeleton h-4 w-5/6 rounded-lg" />
+        <div className="h-6 w-3/4 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="h-4 w-full rounded-lg bg-gray-100 animate-pulse" />
+        <div className="h-4 w-5/6 rounded-lg bg-gray-100 animate-pulse" />
         <div className="mt-4 flex gap-2">
           {[1, 2, 3].map((k) => (
-            <div key={k} className="skeleton h-7 w-20 rounded-lg" />
+            <div key={k} className="h-7 w-20 rounded-lg bg-gray-100 animate-pulse" />
           ))}
         </div>
         <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-          <div className="skeleton h-8 w-28 rounded-lg" />
-          <div className="skeleton h-10 w-28 rounded-xl" />
+          <div className="h-8 w-28 rounded-lg bg-gray-100 animate-pulse" />
+          <div className="h-10 w-28 rounded-xl bg-gray-100 animate-pulse" />
         </div>
       </div>
     </div>
@@ -67,7 +68,6 @@ export default function RoomsPage() {
               subtitle="Real-time availability. Book directly for the best rates — no hidden fees."
             />
 
-            {/* Error state */}
             {error && (
               <div className="mt-10 flex items-start gap-3 max-w-xl mx-auto bg-red-50 border border-red-200 rounded-2xl p-5 animate-fade-up">
                 <span className="text-xl flex-shrink-0">⚠️</span>
@@ -83,12 +83,9 @@ export default function RoomsPage() {
               </div>
             )}
 
-            {/* Room grid */}
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {loading
-                ? Array.from({ length: 3 }).map((_, i) => (
-                    <RoomCardSkeleton key={i} />
-                  ))
+                ? Array.from({ length: 3 }).map((_, i) => <RoomCardSkeleton key={i} />)
                 : rooms.length === 0 && !error
                 ? (
                   <div className="col-span-3 py-20 text-center animate-fade-up">
@@ -98,11 +95,7 @@ export default function RoomsPage() {
                   </div>
                 )
                 : rooms.map((room, i) => (
-                  <div
-                    key={room._id}
-                    className="animate-fade-up"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  >
+                  <div key={room._id} className="animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
                     <RoomCard
                       roomId={room._id}
                       title={room.name}

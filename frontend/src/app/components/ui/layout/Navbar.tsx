@@ -10,6 +10,7 @@ const navLinks = [
   { label: "Home", href: "#home" },
   { label: "Rooms", href: "#rooms" },
   { label: "Amenities", href: "#amenities" },
+  { label: "Scaling", href: "#scaling" },
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];
@@ -29,14 +30,22 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setUser(getStoredUser()), 0);
-    return () => clearTimeout(timer);
+    // Sync user from storage after navigation
+    const t = setTimeout(() => setUser(getStoredUser()), 0);
+    return () => clearTimeout(t);
   }, [pathname]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMenuOpen(false), 0);
-    return () => clearTimeout(timer);
+    // Close mobile menu on navigation
+    const t = setTimeout(() => setMenuOpen(false), 0);
+    return () => clearTimeout(t);
   }, [pathname]);
+
+  useEffect(() => {
+    const handleStorage = () => setUser(getStoredUser());
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const isHome = pathname === "/";
   const getNavHref = (hashHref: string) => (isHome ? hashHref : `/${hashHref}`);
@@ -47,7 +56,6 @@ export default function Navbar() {
     router.push("/");
   };
 
-  /* text colour helpers based on scroll/page state */
   const isTransparent = !scrolled && isHome;
 
   return (
@@ -60,23 +68,20 @@ export default function Navbar() {
     >
       <Container>
         <div className="flex items-center justify-between py-4 gap-3">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <span className="text-2xl">🌿</span>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                  Hill<span className="text-green-700">Nest</span>
+                </h1>
+                <p className="text-xs font-medium uppercase tracking-[0.24em] text-gray-500">
+                  Homestay booking
+                </p>
+              </div>
+            </Link>
+          </div>
 
-          {/* ── Brand ── */}
-          <Link href="/" className="inline-flex items-center gap-2.5 group flex-shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <span className="text-lg">🌿</span>
-            </div>
-            <div>
-              <h1 className={`text-xl font-bold tracking-tight leading-none transition-colors duration-300 ${isTransparent ? "text-white" : "text-gray-900"}`}>
-                Hill<span className={isTransparent ? "text-green-400" : "text-green-700"}>Nest</span>
-              </h1>
-              <p className={`text-[10px] uppercase tracking-[0.22em] font-medium ${isTransparent ? "text-white/60" : "text-gray-400"}`}>
-                Homestay
-              </p>
-            </div>
-          </Link>
-
-          {/* ── Desktop nav links ── */}
           <div className="hidden md:flex gap-7 font-medium text-sm">
             {navLinks.map(({ label, href }) => (
               <Link
@@ -94,10 +99,8 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* ── Right: auth buttons ── */}
           <div className="flex items-center gap-2.5">
             {user ? (
-              /* Logged-in state */
               <div className="flex items-center gap-2">
                 <Link
                   href="/user"
@@ -123,9 +126,7 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              /* Guest state */
               <>
-                {/* Sign In — adapts to bg */}
                 <Link
                   href="/login"
                   className={`hidden sm:inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
@@ -136,7 +137,6 @@ export default function Navbar() {
                 >
                   Sign In
                 </Link>
-                {/* Get Started — solid green gradient always */}
                 <Link
                   href="/register"
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-800 to-emerald-600 text-white text-sm font-semibold shadow-md shadow-green-900/25 hover:from-green-700 hover:to-emerald-500 hover:shadow-green-900/35 hover:scale-105 active:scale-95 transition-all duration-300"
@@ -146,7 +146,6 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Mobile hamburger */}
             <button
               type="button"
               id="mobile-menu-btn"
@@ -164,7 +163,6 @@ export default function Navbar() {
         </div>
       </Container>
 
-      {/* ── Mobile menu ── */}
       {menuOpen && (
         <div className="md:hidden relative z-[70] bg-white/98 backdrop-blur-xl border-t border-gray-100 animate-fade-in shadow-lg">
           <div className="px-6 py-5 flex flex-col gap-1">

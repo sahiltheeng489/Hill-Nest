@@ -72,8 +72,8 @@ function BookingsPageContent() {
   const [authReady, setAuthReady] = useState(false);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("Please login to view your bookings.");
 
   // Booking form
   const [room, setRoom] = useState<Room | null>(null);

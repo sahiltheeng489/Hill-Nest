@@ -8,11 +8,10 @@ export default function HomeUserBanner() {
   const [user, setUser] = useState<{ name: string } | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    queueMicrotask(() => {
       const stored = getStoredUser();
       setUser(stored ?? null);
-    }, 0);
-    return () => clearTimeout(timer);
+    });
   }, []);
 
   if (!user) return null;

@@ -8,13 +8,32 @@ const {
   cancelBooking,
 } = require("../controllers/bookingController");
 const { protect } = require("../middleware/authMiddleware");
+const {
+  validateBooking,
+  validateObjectIdParam,
+} = require("../middleware/validationMiddleware");
 
 const router = express.Router();
 
-router.post("/", protect, createBooking);
+router.post("/", protect, validateBooking, createBooking);
 router.get("/", protect, getBookings);
-router.get("/:id", protect, getBookingById);
-router.put("/:id", protect, updateBooking);
-router.patch("/:id/cancel", protect, cancelBooking);
+router.get(
+  "/:id",
+  protect,
+  validateObjectIdParam("id"),
+  getBookingById
+);
+router.put(
+  "/:id",
+  protect,
+  validateObjectIdParam("id"),
+  updateBooking
+);
+router.patch(
+  "/:id/cancel",
+  protect,
+  validateObjectIdParam("id"),
+  cancelBooking
+);
 
 module.exports = router;

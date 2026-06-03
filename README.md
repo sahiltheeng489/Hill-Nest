@@ -1,240 +1,495 @@
-# Project-F: HillNest Hotel Booking App
+# Project-F: HillNest Hotel Booking Platform
 
-Project-F is a full-stack hotel booking application with a Next.js frontend and an Express + MongoDB backend. The current build includes authenticated bookings, Razorpay checkout, booking cancellation and conflict checks, admin-protected room creation, and a refreshed guest-facing UI.
+## Overview
 
-## Features
+Project-F (HillNest) is a modern full-stack hotel booking platform designed to provide a seamless reservation experience for guests while maintaining secure, scalable, and maintainable backend infrastructure.
 
-- Browse rooms with filters for dates, guests, price range, and room type
-- Create paid bookings with Razorpay checkout and server-side payment verification
-- Prevent overlapping bookings for active stays (`pending` and `confirmed`)
-- View booking history with status-aware cards and recent-booking summaries
-- Cancel existing bookings from the user booking dashboard
-- Register and login with JWT authentication
-- Rate-limit auth requests to reduce repeated login/register abuse
-- Restrict room creation to authenticated admin users
-- Use floating WhatsApp and FAQ chat widgets on the frontend
-- Run frontend requests through a local `/api` rewrite for easier local development
+The platform combines a responsive Next.js frontend with a robust Express.js and MongoDB backend, supporting secure authentication, role-based authorization, room management, booking workflows, payment integration, and future enterprise-grade scalability.
 
-## Tech Stack
+---
 
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS
-- Backend: Node.js, Express 5, Mongoose
-- Database: MongoDB Atlas or local MongoDB
-- Auth: bcryptjs, jsonwebtoken
-- Payments: Razorpay
-- Tests: Node test runner (`node --test`)
+## Project Vision
 
-## Project Structure
+HillNest aims to become a production-ready hospitality platform capable of supporting:
+
+* Secure guest registration and authentication
+* Real-time room availability management
+* Online booking and payment processing
+* Administrative room and booking management
+* Scalable cloud deployment
+* Enterprise-grade security practices
+* Future multi-property support
+
+---
+
+# Current Features
+
+## Guest Features
+
+* User Registration & Login
+* JWT Authentication
+* Secure Session Management
+* Room Discovery and Filtering
+* Room Details View
+* Online Booking Workflow
+* Booking History Dashboard
+* Booking Cancellation
+* Responsive Mobile-Friendly Interface
+* WhatsApp Support Integration
+* FAQ Assistant Integration
+
+## Payment Features
+
+* Razorpay Integration
+* Secure Payment Verification
+* Server-side Signature Validation
+* Booking Confirmation After Successful Payment
+
+## Administrative Features
+
+* Admin-Protected Room Creation
+* Role-Based Access Control (RBAC)
+* Protected API Endpoints
+* Backend Validation Middleware
+* Authentication Rate Limiting
+
+---
+
+# Technology Stack
+
+## Frontend
+
+* Next.js 16
+* React 19
+* TypeScript
+* Tailwind CSS
+
+## Backend
+
+* Node.js
+* Express.js 5
+* MongoDB
+* Mongoose
+
+## Authentication & Security
+
+* JWT Access Tokens
+* Refresh Tokens
+* HTTP-only Cookies
+* bcryptjs Password Hashing
+* Role-Based Authorization
+* Request Validation Middleware
+* Authentication Rate Limiting
+
+## Payments
+
+* Razorpay
+
+## Testing
+
+* Node.js Test Runner
+* Backend Route Validation Testing
+
+---
+
+# System Architecture
 
 ```text
-Project-F/
-|- frontend/
-|  |- src/
-|  |  |- app/
-|  |  |  |- booking/page.tsx
-|  |  |  |- bookings/page.tsx
-|  |  |  |- rooms/page.tsx
-|  |  |  |- user/page.tsx
-|  |  |  |- components/
-|  |  |  |  |- auth/AuthForm.tsx
-|  |  |  |  |- ui/
-|  |  |  |  |  |- layout/{Navbar.tsx, Footer.tsx}
-|  |  |  |  |  |- payment/PaymentButton.tsx
-|  |  |  |  |  |- room/RoomCard.tsx
-|  |  |  |  |  `- ui/{ChatBot.tsx, WhatsAppButton.tsx, Button.tsx, Card.tsx}
-|  |  |  `- sections/{Hero.tsx, Rooms.tsx, Amenities.tsx, GalleryAndTestimonials.tsx}
-|  |  |- services/authService.ts
-|  |  `- globals.css
-|  `- next.config.ts
-`- backend/
-   |- controllers/
-   |  |- authController.js
-   |  |- bookingController.js
-   |  |- paymentController.js
-   |  |- profileController.js
-   |  `- roomController.js
-   |- middleware/
-   |  |- authMiddleware.js
-   |  `- rateLimitMiddleware.js
-   |- models/
-   |  |- Booking.js
-   |  |- Room.js
-   |  `- User.js
-   |- routes/
-   |  |- authRoutes.js
-   |  |- bookingRoutes.js
-   |  |- paymentRoutes.js
-   |  |- profileRoutes.js
-   |  `- roomRoutes.js
-   |- tests/payment-and-routes.test.js
-   `- server.js
+Client (Next.js)
+        |
+        V
+Express API Layer
+        |
+        +--> Authentication Middleware
+        |
+        +--> Authorization Middleware
+        |
+        +--> Validation Middleware
+        |
+        +--> Business Controllers
+        |
+        V
+MongoDB Database
+        |
+        V
+Payment Gateway (Razorpay)
 ```
 
-## API Endpoints
+---
 
-### Health
+# Project Structure
 
-- `GET /` - backend status check
-
-### Auth
-
-- `POST /api/auth/register` - register user
-- `POST /api/auth/login` - login user and receive JWT
-
-### Rooms
-
-- `GET /api/rooms` - get all rooms with optional filters
-- `GET /api/rooms/:id` - get one room by id
-- `POST /api/rooms` - create a room (`admin` only, JWT required)
-
-### Bookings
-
-- `POST /api/bookings` - create a non-payment booking for logged-in user
-- `GET /api/bookings` - get current user's bookings, newest first
-- `GET /api/bookings/:id` - get one booking owned by current user
-- `PUT /api/bookings/:id` - update an owned booking if not cancelled
-- `PATCH /api/bookings/:id/cancel` - cancel an owned booking
-
-### Payments
-
-- `POST /api/payment/create-order` - create Razorpay order for selected booking details
-- `POST /api/payment/verify` - verify Razorpay payment and create confirmed booking
-
-### Profile
-
-- `GET /api/profile` - get current authenticated user profile
-
-## Setup
-
-### 1. Clone the repository
-
-```bash
-git clone <your-repo-url>
-cd Project-F
+```text
+Project-F
+│
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── sections/
+│   │
+│   └── next.config.ts
+│
+├── backend/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── tests/
+│   └── server.js
+│
+└── README.md
 ```
 
-### 2. Backend setup
+---
+
+# Security Architecture
+
+Security is treated as a core design principle rather than an afterthought.
+
+Current security controls include:
+
+* JWT Authentication
+* Refresh Token Rotation
+* Password Hashing with bcrypt
+* Protected Routes
+* Role-Based Access Control
+* Validation Middleware
+* Authentication Rate Limiting
+* Secure Environment Variable Usage
+* HTTP-only Cookie Sessions
+
+Future security controls include:
+
+* Multi-Factor Authentication (MFA)
+* Security Audit Logging
+* Refresh Token Revocation Lists
+* Account Lockout Protection
+* Advanced Rate Limiting
+* OWASP Security Hardening
+* Centralized Monitoring & Alerting
+
+---
+
+# Contributors
+
+## Sahil – Full Stack & Platform Development
+
+### Responsibilities
+
+* Core platform architecture
+* Frontend development
+* Booking workflow implementation
+* Payment integration
+* UI/UX improvements
+* Feature planning
+* Deployment preparation
+
+### Key Contributions
+
+* Booking management system
+* Razorpay integration
+* Room management APIs
+* Frontend architecture
+* User dashboard implementation
+* Hotel booking workflows
+
+---
+
+## Pradhumna Som – Security Researcher & Backend Collaborator
+
+### Responsibilities
+
+* Authentication architecture
+* Authorization systems
+* API security
+* Validation framework
+* Security testing
+* Backend hardening
+* Production-readiness initiatives
+
+### Key Contributions
+
+* JWT Authentication System
+* Refresh Token Management
+* Role-Based Access Control
+* Validation Middleware Architecture
+* Password Reset Flow
+* Email Verification Flow
+* Authentication Security Enhancements
+* Backend Testing Infrastructure
+* Secure Session Management
+
+### Security Focus Areas
+
+* Authentication Security
+* Access Control
+* API Protection
+* Secure Coding Practices
+* Threat Mitigation
+* Future Compliance Readiness
+
+---
+
+# API Overview
+
+## Authentication
+
+```http
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh
+POST /api/auth/logout
+POST /api/auth/forgot-password
+POST /api/auth/reset-password/:token
+GET  /api/auth/verify-email/:token
+```
+
+## Profile
+
+```http
+GET /api/profile
+```
+
+## Rooms
+
+```http
+GET  /api/rooms
+GET  /api/rooms/:id
+POST /api/rooms
+```
+
+## Bookings
+
+```http
+POST /api/bookings
+GET  /api/bookings
+GET  /api/bookings/:id
+PATCH /api/bookings/:id/cancel
+```
+
+## Payments
+
+```http
+POST /api/payment/create-order
+POST /api/payment/verify
+```
+
+---
+
+# Local Development Setup
+
+## Backend
 
 ```bash
 cd backend
+
 npm install
-```
 
-Create `backend/.env` from `backend/.env.example`:
-
-```env
-PORT=5000
-HOST=0.0.0.0
-MONGO_URI=your_mongodb_connection_string
-MONGO_DB=your_database_name
-JWT_SECRET=replace_with_a_long_random_secret
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:3000
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-AUTH_RATE_LIMIT_WINDOW_MS=600000
-AUTH_RATE_LIMIT_MAX=10
-```
-
-Razorpay setup:
-
-- Put your Razorpay test key id into `RAZORPAY_KEY_ID`.
-- Put the matching secret you downloaded from Razorpay into `RAZORPAY_KEY_SECRET`.
-- The screenshot you shared shows a key id only; checkout will not work until the secret is also added to `backend/.env`.
-
-Run backend:
-
-```bash
 npm start
 ```
 
-Run backend tests:
+Create a `.env` file:
 
-```bash
-npm test
+```env
+PORT=5000
+MONGO_URI=your_mongodb_uri
+
+JWT_SECRET=your_secret
+REFRESH_TOKEN_SECRET=your_refresh_secret
+
+CLIENT_URL=http://localhost:3000
+
+RAZORPAY_KEY_ID=your_key
+RAZORPAY_KEY_SECRET=your_secret
 ```
 
-Backend default URL: `http://localhost:5000`
+---
 
-### 3. Frontend setup
+## Frontend
 
 ```bash
-cd ../frontend
+cd frontend
+
 npm install
+
 npm run dev
 ```
 
-Frontend default URL: `http://localhost:3000`
+Frontend URL:
 
-Optional frontend env in `frontend/.env.local` from `frontend/.env.example`:
-
-```env
-NEXT_PUBLIC_API_URL=
-BACKEND_URL=http://127.0.0.1:5000
+```text
+http://localhost:3000
 ```
 
-Notes:
+Backend URL:
 
-- The frontend now rewrites `/api/*` requests to `BACKEND_URL` or `http://127.0.0.1:5000`.
-- Leaving `NEXT_PUBLIC_API_URL` empty keeps browser requests same-origin and works well with the rewrite setup.
-- If you prefer calling the backend directly from the browser, set `NEXT_PUBLIC_API_URL=http://localhost:5000`.
-- For the simplest local Razorpay setup, keep `NEXT_PUBLIC_API_URL=` empty and keep `BACKEND_URL=http://127.0.0.1:5000`.
+```text
+http://localhost:5000
+```
 
-## Booking and Payment Flow
+---
 
-1. A user registers or logs in to receive a JWT.
-2. The rooms page fetches available rooms and filters out conflicting active bookings for selected dates.
-3. The booking flow redirects into `/bookings`, where the selected room and stay details are prefilled.
-4. The frontend creates a Razorpay order through `POST /api/payment/create-order`.
-5. Razorpay completes checkout in the browser modal.
-6. The frontend sends payment identifiers to `POST /api/payment/verify`.
-7. The backend verifies the Razorpay signature, checks order integrity, rechecks room availability, and creates a `confirmed` booking with stored payment metadata.
+# Development Workflow
 
-## Razorpay Test Checklist
+## For Contributors
 
-1. Start MongoDB and the backend on `http://localhost:5000`.
-2. Add valid Razorpay test credentials to `backend/.env`.
-3. Start the frontend on `http://localhost:3000`.
-4. Register or log in.
-5. Open a room, continue to checkout, and click the pay button.
-6. Complete the Razorpay test modal with a test payment method.
-7. Confirm the booking appears in `/bookings` with `Payment Confirmed`.
+### Create Feature Branch
 
-## Current Behavior Highlights
+```bash
+git checkout main
+git pull origin main
 
-- Booking conflicts are checked both before creating a booking and again during payment verification.
-- Cancelled bookings no longer block room availability.
-- User booking lists are sorted newest first.
-- Room creation is protected by both JWT auth and admin-role authorization.
-- Auth endpoints expose rate-limit headers such as `X-RateLimit-Remaining` and `Retry-After`.
-- The user dashboard surfaces booking totals, active stays, cancelled stays, and recent bookings.
+git checkout -b feature/feature-name
+```
 
-## Tests Included
+### Commit Changes
 
-- Payment order creation blocks unavailable rooms before checkout opens
-- Payment verification rejects mismatched Razorpay order details
-- Payment verification blocks overlapping bookings after successful payment
-- Booking updates reject user-driven status changes
-- Room creation route requires auth middleware and admin-only authorization
+```bash
+git add .
+git commit -m "feat: add new feature"
+```
 
-## Roadmap
+### Push Changes
 
-- Add booking reschedule and edit controls to the frontend UI
-- Add refund handling for cancelled paid bookings
-- Expand automated coverage for auth, bookings, and frontend flows
-- Add admin dashboards for room and booking management
-- Add email and notification workflows around booking confirmation
+```bash
+git push origin feature/feature-name
+```
 
-## Notes
+### Open Pull Request
 
-- Start the backend before testing protected frontend flows.
-- Keep `.env` files out of git.
-- Store room images in `frontend/public/` and reference by filename or URL.
+* Create Pull Request
+* Request Review
+* Resolve Feedback
+* Merge into Main
 
-## Secrets Setup
+---
 
-1. Copy `backend/.env.example` to `backend/.env`.
-2. Put your real values in `backend/.env` (Mongo URI, JWT secret, etc.).
-3. Never commit `backend/.env` to git.
-4. If any secret is exposed, rotate it immediately (MongoDB user password, JWT secret).
-- Configure real Razorpay keys before testing checkout.
+# Future Scalability Roadmap
+
+## Phase 1 – Stability & Quality
+
+### Sahil
+
+* Improve booking UX
+* Refine room discovery
+* Enhance frontend performance
+* Expand user dashboard
+
+### Pradhumna
+
+* Increase authentication coverage
+* Improve validation testing
+* Expand security documentation
+* Standardize API error handling
+
+---
+
+## Phase 2 – Booking Intelligence
+
+### Sahil
+
+* Availability Calendar
+* Booking Modifications
+* Email Notifications
+* Reservation Analytics
+
+### Pradhumna
+
+* Booking Fraud Prevention
+* Abuse Detection Rules
+* Session Security Monitoring
+* Secure Notification Pipelines
+
+---
+
+## Phase 3 – Administrative Platform
+
+### Sahil
+
+* Admin Dashboard
+* Room CRUD Management
+* Booking Management Console
+* Reporting Tools
+
+### Pradhumna
+
+* Granular RBAC
+* Audit Logging
+* Privileged Access Controls
+* Administrative Security Reviews
+
+---
+
+## Phase 4 – Enterprise Payments
+
+### Sahil
+
+* Stripe Integration
+* Discount Engine
+* Dynamic Pricing
+* Multi-Currency Support
+
+### Pradhumna
+
+* Payment Security Controls
+* Transaction Monitoring
+* Fraud Detection
+* PCI Readiness Planning
+
+---
+
+## Phase 5 – Production Readiness
+
+### Sahil
+
+* Docker Deployment
+* CI/CD Pipelines
+* Monitoring Dashboards
+* Cloud Infrastructure
+
+### Pradhumna
+
+* Security Hardening
+* Secrets Management
+* Vulnerability Assessment
+* Penetration Testing
+
+---
+
+## Phase 6 – Enterprise Scale
+
+### Sahil
+
+* Multi-Hotel Support
+* Multi-Tenant Architecture
+* Mobile Applications
+* Global Deployment
+
+### Pradhumna
+
+* Zero-Trust Security Model
+* SIEM Integration
+* Compliance Readiness
+* Advanced Threat Detection
+
+---
+
+# Long-Term Goals
+
+* Production-grade booking platform
+* Enterprise-ready architecture
+* Secure payment ecosystem
+* High availability infrastructure
+* Cloud-native deployment
+* Industry-standard security controls
+* Sustainable contributor workflow
+
+---
+
+# License
+
+This project is currently under active development.
+
+All contributors should follow secure coding practices, proper Git workflows, and code review requirements before merging changes.

@@ -3,9 +3,8 @@ import Footer from "@/app/components/ui/layout/Footer";
 import Hero from "@/app/sections/Hero";
 import Rooms from "@/app/sections/Rooms";
 import Amenities from "@/app/sections/Amenities";
+import FutureScaling from "@/app/sections/FutureScaling";
 import GalleryAndTestimonials from "@/app/sections/GalleryAndTestimonials";
-import WhatsAppButton from "@/app/components/ui/ui/WhatsAppButton";
-import ChatBot from "@/app/components/ui/ui/ChatBot";
 
 export default function Home() {
   return (
@@ -16,14 +15,11 @@ export default function Home() {
           <Hero />
           <Rooms />
           <Amenities />
+          <FutureScaling />
           <GalleryAndTestimonials />
           <Footer />
         </div>
       </main>
-
-      {/* Floating widgets */}
-      <WhatsAppButton />
-      <ChatBot />
     </>
   );
 }

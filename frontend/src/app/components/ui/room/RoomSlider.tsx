@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import RoomCard from "@/app/components/ui/room/RoomCard";
+import RoomCard from "./RoomCard";
 
 type Room = {
   _id: string;

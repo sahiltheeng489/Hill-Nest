@@ -26,6 +26,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [devVerificationUrl, setDevVerificationUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const nextPath = searchParams.get("next");
   const safeNextPath = nextPath && nextPath.startsWith("/") ? nextPath : null;
@@ -35,16 +37,19 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
+    setDevVerificationUrl("");
     setIsSubmitting(true);
     try {
       if (isRegister) {
-        await registerUser({ name, email, password });
-        router.push(postAuthPath);
+        const data = await registerUser({ name, email, password });
+        setSuccess("Account created. Verify your email to unlock the full account flow.");
+        setDevVerificationUrl(data.emailVerification?.devUrl || "");
       } else {
         await loginUser({ email, password });
         router.push(postAuthPath);
+        router.refresh();
       }
-      router.refresh();
     } catch (currentError) {
       setError(
         currentError instanceof Error
@@ -230,39 +235,43 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 </div>
               )}
 
-              {/* Submit */}
+              {success && (
+                <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                  <p>{success}</p>
+                  {devVerificationUrl ? (
+                    <a
+                      href={devVerificationUrl}
+                      className="mt-2 inline-flex font-semibold text-green-900 underline underline-offset-2"
+                    >
+                      Open development verification link
+                    </a>
+                  ) : null}
+                </div>
+              )}
+
               <button
-                id="auth-submit-btn"
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-green-800 to-emerald-600 text-white font-semibold text-sm shadow-lg shadow-green-900/25 hover:from-green-700 hover:to-emerald-500 hover:shadow-green-900/35 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 animate-fade-up delay-300"
+                className="w-full rounded-md bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
-                {isSubmitting ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    {isRegister ? "Creating account…" : "Signing in…"}
-                  </>
-                ) : (
-                  <>
-                    {isRegister ? "Create Account" : "Sign In"}
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </>
-                )}
+                {isSubmitting
+                  ? "Please wait..."
+                  : isRegister
+                    ? "Create account"
+                    : "Login"}
               </button>
-            </form>
 
-            {/* Switch mode */}
-            <p className="mt-6 text-center text-sm text-gray-500">
-              {isRegister ? "Already have an account?" : "New to HillNest?"}{" "}
-              <Link
-                href={switchModeHref}
-                className="font-semibold text-green-700 hover:text-green-800 hover:underline underline-offset-2 transition-colors"
-              >
-                {isRegister ? "Sign in" : "Create an account"}
-              </Link>
-            </p>
+              {/* Switch mode */}
+              <p className="mt-6 text-center text-sm text-gray-500">
+                {isRegister ? "Already have an account?" : "New to HillNest?"}{" "}
+                <Link
+                  href={switchModeHref}
+                  className="font-semibold text-green-700 hover:text-green-800 hover:underline underline-offset-2 transition-colors"
+                >
+                  {isRegister ? "Sign in" : "Create an account"}
+                </Link>
+              </p>
+            </form>
           </div>
 
           {/* Back link */}
