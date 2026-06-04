@@ -45,16 +45,18 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setDevVerificationUrl("");
     setIsSubmitting(true);
     try {
-     if (isRegister) {
-  const data = await registerUser({ name, email, password });
-  setSuccess("Account created. Verify your email to unlock the full account flow.");
-  setDevVerificationUrl(data.emailVerification?.devUrl || "");
-} else {
-  await loginUser({ email, password });
-  startTransition(() => {
-    router.replace(postAuthPath);
-  });
-}
+      if (isRegister) {
+        const data = await registerUser({ name, email, password });
+        setSuccess("Account created. Verify your email to unlock the full account flow.");
+        setDevVerificationUrl(data.emailVerification?.devUrl || "");
+      } else {
+        const data = await loginUser({ email, password });
+        const nextDestination = safeNextPath || (data.user.role === "admin" ? "/admin" : "/user");
+
+        startTransition(() => {
+          router.replace(nextDestination);
+        });
+      }
     } catch (currentError) {
       setError(
         currentError instanceof Error

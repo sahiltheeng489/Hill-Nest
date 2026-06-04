@@ -53,6 +53,10 @@ export default function UserPage() {
     const loadProfileAndBookings = async () => {
       const stored = getStoredUser();
       if (stored) {
+        if (stored.role === "admin") {
+          router.replace("/admin");
+          return;
+        }
         setUser(stored);
       }
 
@@ -61,6 +65,10 @@ export default function UserPage() {
         if (!isMounted) return;
 
         if (data?.user) {
+          if (data.user.role === "admin") {
+            router.replace("/admin");
+            return;
+          }
           setUser(data.user);
         }
         setStatus("ready");

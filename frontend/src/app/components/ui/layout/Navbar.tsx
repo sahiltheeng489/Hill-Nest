@@ -18,7 +18,7 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; role?: "user" | "admin" } | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -47,6 +47,7 @@ export default function Navbar() {
 
   const isHome = pathname === "/";
   const getNavHref = (hashHref: string) => (isHome ? hashHref : `/${hashHref}`);
+  const dashboardHref = user?.role === "admin" ? "/admin" : "/user";
 
   const handleLogout = () => {
     logoutUser();
@@ -101,7 +102,7 @@ export default function Navbar() {
             {user ? (
               <div className="flex items-center gap-2">
                 <Link
-                  href="/user"
+                  href={dashboardHref}
                   className={`inline-flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 border ${
                     isTransparent
                       ? "glass border-white/30 text-white hover:bg-white/20"
@@ -179,7 +180,7 @@ export default function Navbar() {
               {user ? (
                 <>
                   <Link
-                    href="/user"
+                    href={dashboardHref}
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-green-50 text-green-700 font-semibold text-sm"
                   >
