@@ -5,15 +5,20 @@ const Booking = require("../models/Booking");
 const Room = require("../models/Room");
 
 let _razorpay = null;
+const isPlaceholderRazorpayValue = (value) =>
+  !value ||
+  value.includes("REPLACE_ME") ||
+  value.toLowerCase().includes("replace_me") ||
+  value.toLowerCase().includes("replace_with");
+
 const getRazorpay = () => {
   if (!_razorpay) {
     if (
-      !process.env.RAZORPAY_KEY_ID ||
-      !process.env.RAZORPAY_KEY_SECRET ||
-      process.env.RAZORPAY_KEY_ID === "rzp_test_REPLACE_ME"
+      isPlaceholderRazorpayValue(process.env.RAZORPAY_KEY_ID) ||
+      isPlaceholderRazorpayValue(process.env.RAZORPAY_KEY_SECRET)
     ) {
       throw new Error(
-        "Razorpay keys are not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to backend/.env"
+        "Razorpay keys are not configured. Add real RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET values to backend/.env"
       );
     }
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { buildApiUrl } from "@/services/api";
-import { AuthUser, getProfile, getStoredUser, getToken, logoutUser } from "@/services/authService";
+import { AuthUser, getProfile, getStoredUser, getToken, logoutUser, saveAuth } from "@/services/authService";
 
 type BookingStats = {
   total: number;
@@ -41,6 +41,7 @@ function StatCard({ value, label, icon, colorClass, delay }: { value: number; la
 
 export default function UserPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
@@ -51,13 +52,36 @@ export default function UserPage() {
     let isMounted = true;
 
     const loadProfileAndBookings = async () => {
+      const authToken = searchParams.get("authToken");
+      const authUser = searchParams.get("authUser");
+
+      if (authToken && authUser) {
+        try {
+          const parsedUser = JSON.parse(decodeURIComponent(authUser)) as AuthUser;
+          saveAuth({ token: authToken, user: parsedUser });
+          if (parsedUser.role === "admin") {
+            router.replace("/admin");
+            return;
+          }
+          setUser(parsedUser);
+          setStatus("ready");
+          window.history.replaceState(null, "", "/user");
+        } catch {
+          setError("Login succeeded, but the dashboard session could not be restored.");
+        }
+      }
+
       const stored = getStoredUser();
+      const initialToken = getToken();
       if (stored) {
         if (stored.role === "admin") {
           router.replace("/admin");
           return;
         }
         setUser(stored);
+        setStatus("ready");
+      } else if (initialToken) {
+        setStatus("ready");
       }
 
       try {
@@ -75,7 +99,7 @@ export default function UserPage() {
       } catch (err) {
         if (!isMounted) return;
 
-        if (stored) {
+        if (stored || initialToken) {
           setStatus("ready");
         } else {
           setError(err instanceof Error ? err.message : "Unable to load your profile");
@@ -110,7 +134,7 @@ export default function UserPage() {
     return () => {
       isMounted = false;
     };
-  }, [router]);
+  }, [router, searchParams]);
 
   const handleLogout = () => {
     logoutUser();
