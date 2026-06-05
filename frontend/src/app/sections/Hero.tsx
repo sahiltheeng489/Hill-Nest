@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import HomeUserBanner from "@/app/components/user/HomeUserBanner";
@@ -14,19 +15,18 @@ const stats = [
 
 export default function Hero() {
   const router = useRouter();
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
 
-  const handleBookNow = useCallback(() => {
-    router.push("/rooms");
-  }, [router]);
+  const handleAvailSearch = () => {
+    const params = new URLSearchParams();
+    if (checkIn) params.set("checkIn", checkIn);
+    if (checkOut) params.set("checkOut", checkOut);
+    router.push(`/rooms${params.toString() ? `?${params.toString()}` : ""}`);
+  };
 
-  const handleCheckAvailability = useCallback(() => {
-    const roomsSection = document.getElementById("rooms");
-    if (roomsSection) {
-      roomsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    router.push("/rooms");
-  }, [router]);
+  // Compute today's date for min date on check-in
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <section
@@ -37,19 +37,18 @@ export default function Hero() {
       <div className="absolute inset-0 z-0">
         <Image
           src="/hero.png"
-          alt="HillNest Homestay — A tranquil mountain retreat"
+          alt="HillNest Homestay — A tranquil mountain retreat near Siliguri"
           fill
           priority
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/48 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       </div>
 
-      {/* Decorative orbs */}
+      {/* Single subtle decorative orb */}
       <div className="absolute top-24 right-16 w-80 h-80 bg-green-400/8 rounded-full blur-3xl animate-pulse pointer-events-none" />
-      <div className="absolute bottom-24 right-1/3 w-56 h-56 bg-emerald-300/8 rounded-full blur-2xl pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 w-full pt-28 pb-16">
@@ -60,51 +59,48 @@ export default function Hero() {
             <div className="animate-fade-up">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-green-300 text-xs font-semibold uppercase tracking-widest">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse-ring" />
-                HillNest Homestay · Siliguri
+                HillNest Homestay · Near Siliguri, West Bengal
               </span>
             </div>
 
             {/* Headline */}
-            <h2 className="mt-6 font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white animate-fade-up delay-100">
+            <h1 className="mt-6 font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white animate-fade-up delay-100">
               A Calm Mountain Stay{" "}
               <span className="gradient-text">Near Siliguri</span>
-            </h2>
+            </h1>
 
             {/* Subtext */}
-            <p className="mt-6 text-lg text-gray-300 leading-relaxed max-w-lg animate-fade-up delay-200">
-              Escape to peaceful rooms with fresh mountain air, warm hospitality,
-              and breathtaking valley views — your perfect highland retreat awaits.
+            <p className="mt-6 text-lg text-gray-200 leading-relaxed max-w-lg animate-fade-up delay-200">
+              Panoramic valley views, farm-fresh breakfast, and warm mountain hospitality — your perfect highland retreat is just one booking away.
             </p>
 
-            {/* ── CTA Buttons — side by side, consistent palette ── */}
-            <div className="mt-9 flex flex-wrap items-center gap-4 animate-fade-up delay-300">
-              {/* Primary: solid green gradient */}
-              <button
+            {/* CTA Buttons */}
+            <div className="relative z-20 mt-9 flex flex-col gap-3 animate-fade-up delay-300 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-center min-[420px]:gap-4">
+              <Link
                 id="hero-book-btn"
-                onClick={handleBookNow}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-green-700 to-emerald-500 text-white font-semibold text-base shadow-xl shadow-green-900/30 hover:from-green-600 hover:to-emerald-400 hover:shadow-green-900/40 hover:scale-105 active:scale-95 transition-all duration-300"
+                href="/rooms"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-700 to-emerald-500 px-7 py-3.5 text-base font-semibold text-white shadow-xl shadow-green-900/30 transition-all duration-300 hover:scale-105 hover:from-green-600 hover:to-emerald-400 hover:shadow-green-900/40 active:scale-95"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Book Now
-              </button>
+              </Link>
 
-              {/* Secondary: white outline on dark bg */}
-              <button
+              <Link
                 id="hero-check-btn"
-                onClick={handleCheckAvailability}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border-2 border-white/60 text-white font-semibold text-base backdrop-blur-sm hover:bg-white hover:text-green-800 hover:border-white hover:scale-105 active:scale-95 transition-all duration-300"
+                href="/rooms"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-white/60 px-7 py-3.5 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white hover:bg-white hover:text-green-800 active:scale-95"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
                 </svg>
-                Check Availability
-              </button>
+                Browse Rooms
+              </Link>
             </div>
 
             {/* Trust badges */}
-            <div className="mt-9 flex flex-wrap items-center gap-5 animate-fade-up delay-400">
+            <div className="mt-7 flex flex-wrap items-center gap-5 animate-fade-up delay-400">
               {[
                 "Free Cancellation",
                 "Breakfast Included",
@@ -119,15 +115,53 @@ export default function Hero() {
                 </span>
               ))}
             </div>
+
+            {/* ── Availability Widget ── */}
+            <div className="mt-9 animate-fade-up delay-500">
+              <div className="glass rounded-2xl p-4 inline-flex flex-wrap items-end gap-3 w-full max-w-xl">
+                <div className="flex-1 min-w-[130px]">
+                  <label className="block text-xs text-green-300 font-semibold mb-1.5 uppercase tracking-wide">Check-in</label>
+                  <input
+                    type="date"
+                    id="hero-checkin"
+                    value={checkIn}
+                    min={today}
+                    onChange={e => setCheckIn(e.target.value)}
+                    className="avail-input"
+                  />
+                </div>
+                <div className="flex-1 min-w-[130px]">
+                  <label className="block text-xs text-green-300 font-semibold mb-1.5 uppercase tracking-wide">Check-out</label>
+                  <input
+                    type="date"
+                    id="hero-checkout"
+                    value={checkOut}
+                    min={checkIn || today}
+                    onChange={e => setCheckOut(e.target.value)}
+                    className="avail-input"
+                  />
+                </div>
+                <button
+                  id="hero-avail-btn"
+                  onClick={handleAvailSearch}
+                  className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-green-900/25"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                  </svg>
+                  See Rooms
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Floating Stats Cards */}
-          <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl animate-fade-up delay-500">
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl animate-fade-up delay-600">
             {stats.map(({ value, label }, i) => (
               <div
                 key={label}
                 className="glass rounded-2xl p-4 text-center hover:-translate-y-1 transition-transform duration-300"
-                style={{ animationDelay: `${0.5 + i * 0.08}s` }}
+                style={{ animationDelay: `${0.6 + i * 0.08}s` }}
               >
                 <p className="text-2xl font-bold text-white font-serif">{value}</p>
                 <p className="text-xs text-gray-400 mt-1">{label}</p>

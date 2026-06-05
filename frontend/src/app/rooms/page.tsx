@@ -10,11 +10,33 @@ import Container from "@/app/components/ui/ui/Container";
 import { buildApiUrl } from "@/services/api";
 
 type Room = {
-  _id: string;
+  _id?: string;
   name: string;
   price: number;
   image: string;
+  description?: string;
 };
+
+const fallbackRooms: Room[] = [
+  {
+    name: "Deluxe Valley Room",
+    price: 2999,
+    image: "/room-deluxe.png",
+    description: "Wake up to peaceful valley views, warm wooden interiors, Wi-Fi, and breakfast included.",
+  },
+  {
+    name: "Premium Family Suite",
+    price: 4499,
+    image: "/room-suite.png",
+    description: "A spacious family suite with a private lounge, mountain-facing balcony, and extra comfort.",
+  },
+  {
+    name: "Garden View Room",
+    price: 2499,
+    image: "/room-garden.png",
+    description: "A cozy garden-facing room for couples and solo travelers looking for a calm retreat.",
+  },
+];
 
 function RoomCardSkeleton() {
   return (
@@ -39,22 +61,41 @@ function RoomCardSkeleton() {
 }
 
 export default function RoomsPage() {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [queryString] = useState(() =>
+    typeof window === "undefined" ? "" : window.location.search.replace(/^\?/, "")
+  );
+  const [rooms, setRooms] = useState<Room[]>(fallbackRooms);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(buildApiUrl("/rooms"))
-      .then((res) => res.json())
+    let isMounted = true;
+
+    fetch(buildApiUrl(`/rooms${queryString ? `?${queryString}` : ""}`))
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Could not load rooms.");
+        }
+        return res.json();
+      })
       .then((data: Room[]) => {
-        setRooms(data);
-        setLoading(false);
+        if (!isMounted) return;
+        if (Array.isArray(data) && data.length > 0) {
+          setRooms(data);
+        }
       })
       .catch(() => {
-        setError("Could not load rooms. Please ensure the backend is running.");
-        setLoading(false);
+        if (!isMounted) return;
+        setError("Showing sample rooms. Live availability could not be refreshed.");
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
       });
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [queryString]);
 
   return (
     <>
@@ -84,23 +125,25 @@ export default function RoomsPage() {
             )}
 
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {loading
+              {loading && rooms.length === 0
                 ? Array.from({ length: 3 }).map((_, i) => <RoomCardSkeleton key={i} />)
                 : rooms.length === 0 && !error
                 ? (
-                  <div className="col-span-3 py-20 text-center animate-fade-up">
+                  <div className="py-20 text-center animate-fade-up md:col-span-2 lg:col-span-3">
                     <p className="text-5xl mb-4">🏡</p>
                     <p className="text-gray-500 text-lg font-semibold">No rooms available right now.</p>
                     <p className="text-gray-400 text-sm mt-2">Please check back later or contact us directly.</p>
                   </div>
                 )
                 : rooms.map((room, i) => (
-                  <div key={room._id} className="animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                  <div key={room._id ?? room.name} className="animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
                     <RoomCard
                       roomId={room._id}
                       title={room.name}
                       price={typeof room.price === "number" ? `₹${room.price.toLocaleString("en-IN")}` : "N/A"}
                       image={room.image}
+                      description={room.description}
+                      bookHref={room._id ? `/booking?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(queryString).entries()), roomId: room._id }).toString()}#payment` : "/rooms"}
                     />
                   </div>
                 ))}

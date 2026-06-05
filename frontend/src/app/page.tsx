@@ -3,7 +3,6 @@ import Footer from "@/app/components/ui/layout/Footer";
 import Hero from "@/app/sections/Hero";
 import Rooms from "@/app/sections/Rooms";
 import Amenities from "@/app/sections/Amenities";
-import FutureScaling from "@/app/sections/FutureScaling";
 import GalleryAndTestimonials from "@/app/sections/GalleryAndTestimonials";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
           <Hero />
           <Rooms />
           <Amenities />
-          <FutureScaling />
           <GalleryAndTestimonials />
           <Footer />
         </div>

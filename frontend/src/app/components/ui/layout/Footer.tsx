@@ -1,146 +1,196 @@
+"use client";
+
+import Link from "next/link";
 import Container from "@/app/components/ui/ui/Container";
-import Button from "@/app/components/ui/ui/Button";
 
 const quickLinks = [
   { label: "Home", href: "#home" },
   { label: "Our Rooms", href: "#rooms" },
   { label: "Amenities", href: "#amenities" },
-  { label: "Future Scaling", href: "#scaling" },
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
-  { label: "Bookings", href: "/bookings" },
+  { label: "My Bookings", href: "/bookings" },
 ];
 
 const policies = [
-  { label: "Check-in: 12:00 PM" },
-  { label: "Check-out: 11:00 AM" },
-  { label: "No smoking inside" },
-  { label: "Pets on request" },
+  { icon: "🕛", label: "Check-in: 12:00 PM" },
+  { icon: "🕙", label: "Check-out: 11:00 AM" },
+  { icon: "🚭", label: "No smoking inside" },
+  { icon: "🐾", label: "Pets on request" },
+  { icon: "❄️", label: "AC in all rooms" },
+  { icon: "☕", label: "Breakfast included" },
+];
+
+const socials = [
+  {
+    label: "Instagram",
+    href: "#",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} width={18} height={18}>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <circle cx="12" cy="12" r="4.5" />
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "Facebook",
+    href: "#",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} width={18} height={18}>
+        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+      </svg>
+    ),
+  },
+  {
+    label: "WhatsApp",
+    href: "https://wa.me/919876543210",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} width={18} height={18}>
+        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Footer() {
   return (
-    <footer id="contact" className="bg-gradient-to-br from-gray-950 via-green-950/40 to-gray-950 text-gray-400">
-      {/* CTA Banner */}
-      <div className="border-b border-white/5">
+    <footer id="contact" className="footer-root">
+
+      {/* Top accent line */}
+      <div className="h-[3px] bg-gradient-to-r from-green-200 via-green-400 to-green-200" />
+
+      {/* ── CTA Banner — gradient transition into dark footer ── */}
+      <div className="bg-gradient-to-b from-green-50 via-green-50 to-[#052e1a] pt-14 pb-0">
         <Container>
-          <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-green-400 mb-2">
-                Ready to escape?
-              </p>
-              <h3 className="text-2xl md:text-3xl font-bold text-white font-serif leading-snug">
-                Book Your Mountain Retreat Today
-              </h3>
-              <p className="text-gray-500 text-sm mt-1">
-                Limited rooms available. Reserve your stay now.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
-              <Button id="footer-book-btn" variant="primary" size="md">
-                Book Now
-              </Button>
-              <a
-                href="tel:+919876543210"
-                id="footer-call-btn"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
-              >
-                📞 Call Us
-              </a>
+          <div className="relative bg-white border-2 border-green-200 rounded-3xl p-8 md:p-12 shadow-[0_8px_40px_rgba(20,83,45,0.08)] overflow-hidden">
+            {/* Decorative blobs */}
+            <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-green-100 pointer-events-none" />
+            <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-green-50 pointer-events-none" />
+
+            <div className="relative flex flex-wrap gap-8 items-center justify-between">
+              <div className="max-w-lg">
+                <span className="inline-flex items-center gap-2 bg-green-100 border border-green-300 text-green-800 text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Reserve Your Stay
+                </span>
+                <h3 className="font-serif text-3xl md:text-4xl font-extrabold text-green-950 leading-tight">
+                  Let the hills set the pace<br />for your next escape.
+                </h3>
+                <p className="mt-4 text-green-800/70 text-[0.95rem] leading-relaxed max-w-md">
+                  From sunrise valley views to cosy evenings by the fire, HillNest is ready when you are. Reserve a room and we&apos;ll take care of the rest.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/rooms"
+                  id="footer-book-btn"
+                  className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-[0_4px_16px_rgba(22,163,74,0.25)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(22,163,74,0.35)] transition-all duration-200"
+                >
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  Explore Rooms
+                </Link>
+                <a
+                  href="tel:+919876543210"
+                  id="footer-call-btn"
+                  className="inline-flex items-center justify-center gap-2 bg-white hover:bg-green-50 text-green-700 border-2 border-green-300 hover:border-green-500 px-6 py-3.5 rounded-2xl font-bold text-sm hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.1 1.19 2 2 0 012.08 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l1.45-1.45a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 13.92v3z" /></svg>
+                  Call Us
+                </a>
+              </div>
             </div>
           </div>
         </Container>
       </div>
 
-      {/* Main Footer */}
-      <Container>
-        <div className="pt-14 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center">
-                <span className="text-lg">🌿</span>
-              </div>
-              <h2 className="text-2xl font-bold text-white">
-                Hill<span className="text-green-400">Nest</span>
-              </h2>
-            </div>
-            <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-              A peaceful mountain homestay near Siliguri, West Bengal — offering warmth,
-              comfort, and stunning valley views since 2015.
-            </p>
+      {/* ── Main grid ── */}
+      <div className="bg-[#052e1a] pt-16 pb-0">
+        <Container>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pb-16">
 
-            {/* Contact info */}
-            <div className="mt-6 space-y-2.5 text-sm">
-              <a
-                href="tel:+919876543210"
-                className="flex items-center gap-3 hover:text-green-400 transition-colors"
-              >
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0">📞</span>
-                <span>+91 98765 43210</span>
-              </a>
-              <a
-                href="mailto:hillnest@email.com"
-                className="flex items-center gap-3 hover:text-green-400 transition-colors"
-              >
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0">✉️</span>
-                <span>hillnest@email.com</span>
-              </a>
-              <div className="flex items-start gap-3">
-                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-base flex-shrink-0 mt-0.5">📍</span>
-                <span>Near Sevoke Road, Siliguri,<br />West Bengal — 734001</span>
+            {/* Brand */}
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-400 to-green-700 flex items-center justify-center text-xl shadow-[0_4px_12px_rgba(22,163,74,0.25)]">
+                  🌿
+                </div>
+                <div>
+                  <p className="font-extrabold text-lg text-white leading-none">
+                    Hill<span className="text-green-300">Nest</span>
+                  </p>
+                  <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-green-400 mt-0.5">
+                    Mountain Homestay
+                  </p>
+                </div>
               </div>
+              <p className="text-green-100/80 text-sm leading-relaxed mb-6">
+                A warm mountain retreat near Siliguri with calm mornings, thoughtful hospitality, and rooms designed for slow, memorable stays.
+              </p>
+              {[
+                { icon: "📞", label: "+91 98765 43210", href: "tel:+919876543210" },
+                { icon: "✉️", label: "hillnest@email.com", href: "mailto:hillnest@email.com" },
+                { icon: "📍", label: "Near Sevoke Road, Siliguri, WB 734001", href: "https://maps.google.com" },
+              ].map(({ icon, label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="footer-contact-link"
+                >
+                  <span className="footer-icon-box">{icon}</span>
+                  <span className="pt-1 leading-relaxed">{label}</span>
+                </a>
+              ))}
             </div>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">
-              Quick Links
-            </p>
-            <ul className="space-y-3">
+            {/* Quick links */}
+            <div>
+              <p className="footer-heading">
+                <span className="footer-heading-bar" />
+                Quick Links
+              </p>
               {quickLinks.map(({ label, href }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    className="text-sm text-gray-500 hover:text-green-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-green-700 group-hover:bg-green-400 transition-colors" />
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Policies */}
-          <div>
-            <p className="text-white font-semibold mb-5 uppercase tracking-widest text-xs">
-              House Policies
-            </p>
-            <ul className="space-y-3">
-              {policies.map(({ label }) => (
-                <li key={label} className="text-sm text-gray-500 flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
+                <a key={label} href={href} className="footer-link">
+                  <span className="footer-link-dot" />
                   {label}
-                </li>
+                </a>
               ))}
-            </ul>
+            </div>
 
-            {/* Social */}
-            <div className="mt-8">
-              <p className="text-white font-semibold mb-4 uppercase tracking-widest text-xs">Follow Us</p>
-              <div className="flex gap-3">
-                {[
-                  { label: "Instagram", icon: "📸", href: "#" },
-                  { label: "Facebook", icon: "👍", href: "#" },
-                  { label: "WhatsApp", icon: "💬", href: "#" },
-                ].map(({ label, icon, href }) => (
+            {/* Policies + social */}
+            <div>
+              <p className="footer-heading">
+                <span className="footer-heading-bar" />
+                House Policies
+              </p>
+              {policies.map(({ icon, label }) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-2.5 px-2.5 py-1.5 text-green-100/80 text-sm mb-0.5"
+                >
+                  <span className="text-base">{icon}</span>
+                  {label}
+                </div>
+              ))}
+
+              <div className="h-px bg-green-900/60 my-5" />
+
+              <p className="footer-heading">
+                <span className="footer-heading-bar" />
+                Follow Us
+              </p>
+              <div className="flex gap-2.5">
+                {socials.map(({ label, icon, href }) => (
                   <a
                     key={label}
                     href={href}
                     aria-label={label}
-                    className="w-9 h-9 rounded-xl bg-white/5 hover:bg-green-700/30 border border-white/10 flex items-center justify-center text-base transition-all hover:scale-110 hover:border-green-700/40"
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="footer-social-btn"
                   >
                     {icon}
                   </a>
@@ -148,18 +198,18 @@ export default function Footer() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-white/5 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-600">
-          <p>© {new Date().getFullYear()} HillNest Homestay. All rights reserved.</p>
-          <p className="flex items-center gap-1.5">
-            Designed with{" "}
-            <span className="text-green-500">❤️</span>{" "}
-            in the mountains of West Bengal
-          </p>
-        </div>
-      </Container>
+          {/* Bottom bar */}
+          <div className="border-t border-green-900/50 py-6 pb-8 flex flex-wrap gap-3 items-center justify-between">
+            <p className="text-green-200/70 text-xs">
+              © {new Date().getFullYear()} <span className="text-green-300 font-semibold">HillNest Homestay</span> · All rights reserved.
+            </p>
+            <p className="text-green-200/70 text-xs flex items-center gap-1.5">
+              Crafted with <span className="text-green-400 text-sm">♥</span> in the mountains of West Bengal
+            </p>
+          </div>
+        </Container>
+      </div>
     </footer>
   );
 }

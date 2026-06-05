@@ -19,16 +19,17 @@ interface RoomProps {
   badge?: string;
   rating?: number;
   reviews?: number;
+  capacity?: string;
   bookHref?: string;
   onBook?: (roomId?: string, title?: string) => void;
   isBooking?: boolean;
 }
 
 const defaultAmenities: Amenity[] = [
-  { icon: "🛜", label: "Free Wi-Fi" },
-  { icon: "🌄", label: "Valley View" },
-  { icon: "☕", label: "Breakfast" },
-  { icon: "❄️", label: "AC" },
+  { icon: "Wi-Fi", label: "Free Wi-Fi" },
+  { icon: "View", label: "Valley View" },
+  { icon: "Meal", label: "Breakfast" },
+  { icon: "AC", label: "AC" },
 ];
 
 export default function RoomCard({
@@ -41,19 +42,23 @@ export default function RoomCard({
   badge,
   rating = 4.9,
   reviews = 48,
-  bookHref = "/rooms",
+  capacity = "Sleeps 2",
+  bookHref,
   onBook,
   isBooking = false,
 }: RoomProps) {
-  const safeImage = image || "room-deluxe.png";
+  const safeImage = image?.trim();
   const imageSrc =
-    safeImage.startsWith("http") || safeImage.startsWith("/") ? safeImage : `/${safeImage}`;
+    safeImage && (safeImage.startsWith("http") || safeImage.startsWith("/"))
+      ? safeImage
+      : "/room-deluxe.png";
+  const resolvedBookHref = bookHref ?? (roomId ? `/booking?roomId=${roomId}#payment` : "/rooms");
 
   return (
-    <article className="group bg-white rounded-3xl shadow-md shadow-gray-200/80 hover:-translate-y-2 hover:shadow-2xl transition-all duration-400 overflow-hidden border border-gray-100/60 flex flex-col">
+    <article className="group flex min-h-[520px] flex-col overflow-hidden rounded-3xl border border-gray-100/60 bg-white shadow-md shadow-gray-200/80 transition-all duration-400 hover:-translate-y-2 hover:shadow-2xl">
       {/* Image */}
 
-      <div className="relative overflow-hidden h-60 flex-shrink-0">
+      <div className="relative h-56 flex-shrink-0 overflow-hidden sm:h-60">
         <Image
           src={imageSrc}
           alt={title}
@@ -83,9 +88,14 @@ export default function RoomCard({
       </div>
 
       {/* Content */}
-      <div className="p-6 flex flex-col flex-1">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <h3 className="text-xl font-bold text-gray-900 font-serif">{title}</h3>
         <p className="mt-2 text-sm text-gray-500 leading-relaxed">{description}</p>
+
+        <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-semibold text-gray-600">
+          <span className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">{capacity}</span>
+          <span className="rounded-lg border border-green-100 bg-green-50 px-3 py-2 text-green-700">Direct booking</span>
+        </div>
 
         {/* Amenity badges */}
         <div className="mt-4 flex flex-wrap gap-2">
@@ -101,7 +111,7 @@ export default function RoomCard({
         </div>
 
         {/* Price & CTA */}
-        <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between gap-3 mt-auto">
+        <div className="mt-auto flex flex-col gap-4 border-t border-gray-100 pt-5 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Starting from</p>
             <span className="text-2xl font-extrabold text-green-700 leading-none">{price}</span>
@@ -127,9 +137,9 @@ export default function RoomCard({
             </Button>
           ) : (
             <Link
-              href={bookHref}
+              href={resolvedBookHref}
               aria-label={`Book ${title}`}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-800 to-emerald-600 px-5 py-2 text-sm font-semibold tracking-wide text-white shadow-lg shadow-green-900/25 transition-all duration-300 hover:scale-105 hover:from-green-700 hover:to-emerald-500 hover:shadow-xl hover:shadow-green-900/35 active:scale-95"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-800 to-emerald-600 px-5 py-2.5 text-sm font-semibold tracking-wide text-white shadow-lg shadow-green-900/25 transition-all duration-300 hover:scale-105 hover:from-green-700 hover:to-emerald-500 hover:shadow-xl hover:shadow-green-900/35 active:scale-95 min-[430px]:w-auto"
             >
               Book Room
             </Link>

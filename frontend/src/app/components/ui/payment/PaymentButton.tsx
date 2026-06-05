@@ -12,6 +12,8 @@ declare global {
   }
 }
 
+const RAZORPAY_SCRIPT_ID = "razorpay-checkout-js";
+
 interface BookingPayload {
   room: string;
   name: string;
@@ -51,7 +53,15 @@ export default function PaymentButton({
       return () => clearTimeout(timer);
     }
 
+    const existingScript = document.getElementById(RAZORPAY_SCRIPT_ID) as HTMLScriptElement | null;
+    if (existingScript) {
+      existingScript.addEventListener("load", () => setScriptReady(true), { once: true });
+      existingScript.addEventListener("error", () => onError?.("Could not load payment gateway. Please refresh and try again."), { once: true });
+      return;
+    }
+
     const script = document.createElement("script");
+    script.id = RAZORPAY_SCRIPT_ID;
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     script.onload = () => setScriptReady(true);
@@ -59,11 +69,7 @@ export default function PaymentButton({
     document.body.appendChild(script);
     scriptRef.current = script;
 
-    return () => {
-      if (scriptRef.current && document.body.contains(scriptRef.current)) {
-        document.body.removeChild(scriptRef.current);
-      }
-    };
+    return () => {};
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -75,7 +81,11 @@ export default function PaymentButton({
 
     const token = getToken();
     if (!token) {
-      onError?.("Please login to complete your booking.");
+      const next = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      onError?.("Please login to complete your booking. Redirecting you to sign in...");
+      window.setTimeout(() => {
+        window.location.href = `/login?next=${encodeURIComponent(next)}`;
+      }, 600);
       return;
     }
 
@@ -92,7 +102,7 @@ export default function PaymentButton({
         body: JSON.stringify(bookingPayload),
       });
 
-      const orderData = await orderRes.json();
+      const orderData = await orderRes.json().catch(() => ({}));
 
       if (!orderRes.ok) {
         onError?.(orderData.message || "Failed to initiate payment.");
@@ -138,7 +148,7 @@ export default function PaymentButton({
               }),
             });
 
-            const verifyData = await verifyRes.json();
+            const verifyData = await verifyRes.json().catch(() => ({}));
 
             if (!verifyRes.ok) {
               onError?.(verifyData.message || "Payment verification failed.");

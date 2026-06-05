@@ -34,16 +34,22 @@ async function requestAuth(
   endpoint: "/auth/login" | "/auth/register",
   payload: LoginPayload | RegisterPayload
 ) {
-  const response = await fetch(buildApiUrl(endpoint), {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
 
-  const data = await response.json();
+  try {
+    response = await fetch(buildApiUrl(endpoint), {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new Error("Could not reach the login server. Check that your phone is on the same Wi-Fi.");
+  }
+
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
     throw new Error(data.message || "Authentication request failed");

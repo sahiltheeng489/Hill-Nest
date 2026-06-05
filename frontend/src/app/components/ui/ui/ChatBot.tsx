@@ -126,7 +126,7 @@ export default function ChatBot() {
       {open && (
         <div
           id="chatbot-window"
-          className="fixed bottom-28 right-6 z-[80] w-[340px] max-h-[520px] flex flex-col rounded-2xl shadow-2xl shadow-gray-900/30 border border-gray-100 overflow-hidden pointer-events-auto animate-in"
+          className="fixed inset-x-3 bottom-24 z-[80] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-gray-100 shadow-2xl shadow-gray-900/30 pointer-events-auto animate-in sm:inset-x-auto sm:right-6 sm:bottom-28 sm:w-[340px] sm:max-h-[520px]"
           style={{ animation: "slideUp 0.25s ease-out" }}
         >
           {/* Header */}

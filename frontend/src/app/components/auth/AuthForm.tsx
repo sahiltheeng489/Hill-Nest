@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { loginUser, registerUser } from "@/services/authService";
 
 type AuthFormProps = {
@@ -30,9 +30,19 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [devVerificationUrl, setDevVerificationUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const nextPath = searchParams.get("next");
-  const safeNextPath = nextPath && nextPath.startsWith("/") ? nextPath : null;
+  const safeNextPath =
+    nextPath &&
+    nextPath.startsWith("/") &&
+    !nextPath.startsWith("/login") &&
+    !nextPath.startsWith("/register")
+      ? nextPath
+      : null;
   const postAuthPath = safeNextPath || (isRegister ? "/" : "/user");
   const switchModeHref = `${isRegister ? "/login" : "/register"}${safeNextPath ? `?next=${encodeURIComponent(safeNextPath)}` : ""}`;
+
+  useEffect(() => {
+    router.prefetch(postAuthPath);
+  }, [postAuthPath, router]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,9 +56,16 @@ export default function AuthForm({ mode }: AuthFormProps) {
         setSuccess("Account created. Verify your email to unlock the full account flow.");
         setDevVerificationUrl(data.emailVerification?.devUrl || "");
       } else {
-        await loginUser({ email, password });
-        router.push(postAuthPath);
-        router.refresh();
+        const data = await loginUser({ email, password });
+        const nextDestination = safeNextPath || (data.user.role === "admin" ? "/admin" : "/user");
+
+        setSuccess("Login successful. Opening your dashboard...");
+        window.setTimeout(() => {
+          const destination = new URL(nextDestination, window.location.origin);
+          destination.searchParams.set("authToken", data.token);
+          destination.searchParams.set("authUser", encodeURIComponent(JSON.stringify(data.user)));
+          window.location.href = destination.toString();
+        }, 250);
       }
     } catch (currentError) {
       setError(

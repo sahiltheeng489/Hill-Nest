@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { buildApiUrl } from "@/services/api";
-import { AuthUser, getProfile, getStoredUser, getToken, logoutUser } from "@/services/authService";
+import { AuthUser, getProfile, getStoredUser, getToken, logoutUser, saveAuth } from "@/services/authService";
 
 type BookingStats = {
   total: number;
@@ -41,6 +41,7 @@ function StatCard({ value, label, icon, colorClass, delay }: { value: number; la
 
 export default function UserPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
@@ -51,17 +52,54 @@ export default function UserPage() {
     let isMounted = true;
 
     const loadProfileAndBookings = async () => {
+      const authToken = searchParams.get("authToken");
+      const authUser = searchParams.get("authUser");
+
+      if (authToken && authUser) {
+        try {
+          const parsedUser = JSON.parse(decodeURIComponent(authUser)) as AuthUser;
+          saveAuth({ token: authToken, user: parsedUser });
+          if (parsedUser.role === "admin") {
+            router.replace("/admin");
+            return;
+          }
+          setUser(parsedUser);
+          setStatus("ready");
+          window.history.replaceState(null, "", "/user");
+        } catch {
+          setError("Login succeeded, but the dashboard session could not be restored.");
+        }
+      }
+
       const stored = getStoredUser();
-      if (stored) setUser(stored);
+      const initialToken = getToken();
+      if (stored) {
+        if (stored.role === "admin") {
+          router.replace("/admin");
+          return;
+        }
+        setUser(stored);
+        setStatus("ready");
+      } else if (initialToken) {
+        setStatus("ready");
+      }
 
       try {
         const data = await getProfile();
         if (!isMounted) return;
-        if (data?.user) setUser(data.user);
+
+        if (data?.user) {
+          if (data.user.role === "admin") {
+            router.replace("/admin");
+            return;
+          }
+          setUser(data.user);
+        }
         setStatus("ready");
       } catch (err) {
         if (!isMounted) return;
-        if (stored) {
+
+        if (stored || initialToken) {
           setStatus("ready");
         } else {
           setError(err instanceof Error ? err.message : "Unable to load your profile");
@@ -75,9 +113,12 @@ export default function UserPage() {
       if (!token) return;
 
       try {
-        const res = await fetch(buildApiUrl("/bookings"), { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(buildApiUrl("/bookings"), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const bookings: Booking[] = res.ok ? await res.json() : [];
         if (!isMounted) return;
+
         const total = bookings.length;
         const cancelled = bookings.filter((b) => b.status === "cancelled").length;
         setBookingStats({ total, cancelled, active: total - cancelled });
@@ -89,8 +130,11 @@ export default function UserPage() {
     };
 
     void loadProfileAndBookings();
-    return () => { isMounted = false; };
-  }, [router]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, searchParams]);
 
   const handleLogout = () => {
     logoutUser();
@@ -123,7 +167,7 @@ export default function UserPage() {
         {status === "loading" && (
           <div className="space-y-6">
             <div className="skeleton h-32 rounded-3xl" />
-            <div className="grid grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="skeleton h-24 rounded-2xl" />)}</div>
+            <div className="grid grid-cols-3 gap-4">{[1, 2, 3].map(i => <div key={i} className="skeleton h-24 rounded-2xl" />)}</div>
             <div className="skeleton h-48 rounded-3xl" />
           </div>
         )}
@@ -214,7 +258,6 @@ export default function UserPage() {
                 </div>
               )}
             </div>
-
           </div>
         )}
       </div>

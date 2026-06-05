@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hillnest
+  labels:
+    app.kubernetes.io/name: hillnest
+    environment: production

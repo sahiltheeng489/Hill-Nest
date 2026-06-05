@@ -91,10 +91,19 @@ function BookingsPageContent() {
 
   // ── Auth init ────────────────────────────────────────────────────────────
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const nextToken = getToken();
-      const storedUser = getStoredUser();
+    const nextToken = getToken();
+    const storedUser = getStoredUser();
 
+    if (!nextToken) {
+      queueMicrotask(() => {
+        setError("Please login to view your bookings.");
+        setLoading(false);
+      });
+      router.replace(`/login?next=${encodeURIComponent(loginRedirectPath)}`);
+      return;
+    }
+
+    queueMicrotask(() => {
       setToken(nextToken);
       if (storedUser) {
         setForm((prev) => ({
@@ -103,17 +112,8 @@ function BookingsPageContent() {
           email: prev.email || storedUser.email,
         }));
       }
-
-      if (!nextToken) {
-        setError("Please login to view your bookings.");
-        setLoading(false);
-        router.push(`/login?next=${encodeURIComponent(loginRedirectPath)}`);
-      }
-
       setAuthReady(true);
-    }, 0);
-
-    return () => clearTimeout(timer);
+    });
   }, [loginRedirectPath, router]);
 
   // ── Fetch room details ───────────────────────────────────────────────────
@@ -138,12 +138,11 @@ function BookingsPageContent() {
 
   useEffect(() => {
     if (!authReady || !token) return;
-    const timer = setTimeout(() => {
+    queueMicrotask(() => {
       void fetchBookings()
         .catch(() => setError("Could not load bookings. Please ensure backend is running."))
         .finally(() => setLoading(false));
-    }, 0);
-    return () => clearTimeout(timer);
+    });
   }, [authReady, fetchBookings, token]);
 
   // ── Form field change ────────────────────────────────────────────────────

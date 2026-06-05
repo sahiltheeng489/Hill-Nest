@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getStoredUser } from "@/services/authService";
 
 export default function HomeUserBanner() {
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; role?: "user" | "admin" } | null>(null);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -17,6 +17,7 @@ export default function HomeUserBanner() {
   if (!user) return null;
 
   const initial = user.name.charAt(0).toUpperCase();
+  const dashboardHref = user.role === "admin" ? "/admin" : "/user";
 
   return (
     <div className="mt-12 animate-fade-up delay-600">
@@ -41,7 +42,7 @@ export default function HomeUserBanner() {
 
         {/* CTA */}
         <Link
-          href="/user"
+          href={dashboardHref}
           className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
         >
           My Dashboard
