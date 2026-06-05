@@ -1,0 +1,606 @@
+// ============================================================
+// Prisma Schema — HillNest Admin Dashboard
+// Database: PostgreSQL 16
+// ORM: Prisma 5
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  LOCKED
+  PENDING_VERIFICATION
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSED
+}
+
+enum RefundType {
+  FULL
+  PARTIAL
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum CmsPageType {
+  PAGE
+  FAQ
+  BLOG
+  TERMS
+  PRIVACY
+  ANNOUNCEMENT
+}
+
+enum CmsPageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  LOGIN_FAILED
+  PASSWORD_CHANGE
+  MFA_ENABLED
+  MFA_DISABLED
+  SESSION_REVOKED
+  BOOKING_STATUS_CHANGED
+  REFUND_APPROVED
+  REFUND_REJECTED
+  CUSTOMER_SUSPENDED
+  CUSTOMER_REACTIVATED
+  ROLE_CHANGED
+  PERMISSION_CHANGED
+  IP_BLOCKED
+  EXPORT
+}
+
+// ─────────────────────────────────────────────
+// ROLES & PERMISSIONS
+// ─────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false) // system roles cannot be deleted
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  userRoles   UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String?  // human-readable label e.g. "View Bookings"
+  resource    String   // e.g. "bookings"
+  action      String   // e.g. "read", "write", "delete", "export", "approve"
+  description String?
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─────────────────────────────────────────────
+// ADMIN USERS
+// ─────────────────────────────────────────────
+
+model AdminUser {
+  id                  String     @id @default(cuid())
+  email               String     @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  avatarUrl           String?
+  status              UserStatus @default(ACTIVE)
+  emailVerified       Boolean    @default(false)
+  mfaEnabled          Boolean    @default(false)
+  lastLoginAt         DateTime?
+  lastLoginIp         String?
+  failedLoginAttempts Int        @default(0)
+  lockedUntil         DateTime?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  // Relations
+  userRoles    UserRole[]
+  sessions     AdminSession[]
+  mfaSecrets   MfaSecret[]
+  auditLogs    AuditLog[]     @relation("AdminAuditLogs")
+  loginAttempts LoginAttempt[]
+
+  @@map("admin_users")
+}
+
+model UserRole {
+  id        String    @id @default(cuid())
+  userId    String
+  roleId    String
+  grantedAt DateTime  @default(now())
+  grantedBy String?
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model AdminSession {
+  id           String    @id @default(cuid())
+  userId       String
+  refreshToken String    @unique // stored as bcrypt hash
+  deviceInfo   Json?     // { browser, os, device }
+  ipAddress    String?
+  userAgent    String?
+  isRevoked    Boolean   @default(false)
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime  @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+  @@map("admin_sessions")
+}
+
+model MfaSecret {
+  id        String   @id @default(cuid())
+  userId    String
+  secret    String   // encrypted TOTP secret
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("mfa_secrets")
+}
+
+model LoginAttempt {
+  id             String   @id @default(cuid())
+  userId         String?
+  email          String
+  ipAddress      String
+  userAgent      String?
+  success        Boolean
+  reason         String?  // e.g. "INVALID_PASSWORD", "ACCOUNT_LOCKED"
+  failureReason  String?  // alias for reason, used in some queries
+  createdAt      DateTime @default(now())
+
+  user AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
+  @@map("login_attempts")
+}
+
+// ─────────────────────────────────────────────
+// CUSTOMERS (mirrored from MongoDB)
+// ─────────────────────────────────────────────
+
+model Customer {
+  id               String     @id @default(cuid())
+  mongoId          String?    @unique // Reference to MongoDB _id
+  email            String     @unique
+  name             String
+  phone            String?
+  avatarUrl        String?
+  status           UserStatus @default(ACTIVE)
+  emailVerified    Boolean    @default(false)
+  totalBookings    Int        @default(0)
+  totalSpent       Decimal    @default(0) @db.Decimal(12, 2)
+  notes            String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  bookings    Booking[]
+  payments    Payment[]
+  tickets     Ticket[]
+  activityLogs ActivityLog[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([status])
+  @@map("customers")
+}
+
+// ─────────────────────────────────────────────
+// BOOKINGS
+// ─────────────────────────────────────────────
+
+model Booking {
+  id             String        @id @default(cuid())
+  mongoId        String?       @unique // MongoDB booking _id
+  customerId     String
+  roomId         String?
+  roomName       String
+  roomType       String?
+  checkIn        DateTime
+  checkOut       DateTime
+  guests         Int
+  nights         Int
+  pricePerNight  Decimal       @db.Decimal(10, 2)
+  totalAmount    Decimal       @db.Decimal(12, 2)
+  status         BookingStatus @default(PENDING)
+  notes          String?
+  cancelReason   String?
+  cancelledAt    DateTime?
+  cancelledBy    String?       // admin user id
+  confirmedAt    DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  customer       Customer        @relation(fields: [customerId], references: [id])
+  payment        Payment?
+  refunds        Refund[]
+  statusHistory  BookingHistory[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([checkIn, checkOut])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+model BookingHistory {
+  id         String        @id @default(cuid())
+  bookingId  String
+  fromStatus BookingStatus
+  toStatus   BookingStatus
+  changedBy  String        // admin user id or "system"
+  reason     String?
+  metadata   Json?
+  createdAt  DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_history")
+}
+
+// ─────────────────────────────────────────────
+// PAYMENTS
+// ─────────────────────────────────────────────
+
+model Payment {
+  id                  String        @id @default(cuid())
+  bookingId           String        @unique
+  customerId          String
+  razorpayOrderId     String?       @unique
+  razorpayPaymentId   String?       @unique
+  razorpaySignature   String?
+  amount              Decimal       @db.Decimal(12, 2)
+  currency            String        @default("INR")
+  status              PaymentStatus @default(CREATED)
+  gateway             String        @default("razorpay")
+  gatewayResponse     Json?
+  failureReason       String?
+  refundedAmount      Decimal       @default(0) @db.Decimal(12, 2)
+  metadata            Json?
+  paidAt              DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  booking  Booking    @relation(fields: [bookingId], references: [id])
+  customer Customer   @relation(fields: [customerId], references: [id])
+  refunds  Refund[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────────
+// REFUNDS
+// ─────────────────────────────────────────────
+
+model Refund {
+  id              String       @id @default(cuid())
+  bookingId       String
+  paymentId       String
+  requestedBy     String       // customer id or admin id
+  approvedBy      String?      // admin user id
+  rejectedBy      String?      // admin user id
+  type            RefundType
+  amount          Decimal      @db.Decimal(12, 2)
+  reason          String
+  adminNotes      String?
+  status          RefundStatus @default(PENDING)
+  gatewayRefundId String?
+  processedAt     DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@index([status])
+  @@index([bookingId])
+  @@index([createdAt])
+  @@map("refunds")
+}
+
+// ─────────────────────────────────────────────
+// SUPPORT TICKETS
+// ─────────────────────────────────────────────
+
+model Ticket {
+  id           String         @id @default(cuid())
+  ticketNumber String         @unique @default(cuid())
+  customerId   String
+  assignedToId String?        // admin user id
+  subject      String
+  description  String         @db.Text
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(MEDIUM)
+  category     String?
+  tags         String[]
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+  escalatedAt  DateTime?
+  escalatedTo  String?        // admin user id
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  customer Customer    @relation(fields: [customerId], references: [id])
+  notes    TicketNote[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([assignedToId])
+  @@index([createdAt])
+  @@map("tickets")
+}
+
+model TicketNote {
+  id         String   @id @default(cuid())
+  ticketId   String
+  authorId   String   // admin user id
+  content    String   @db.Text
+  isInternal Boolean  @default(true) // internal = not visible to customer
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("ticket_notes")
+}
+
+// ─────────────────────────────────────────────
+// CMS
+// ─────────────────────────────────────────────
+
+model CmsPage {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  type        CmsPageType
+  status      CmsPageStatus @default(DRAFT)
+  content     String        @db.Text
+  excerpt     String?
+  metaTitle   String?
+  metaDesc    String?
+  authorId    String        // admin user id
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  versions CmsPageVersion[]
+
+  @@index([type])
+  @@index([status])
+  @@index([slug])
+  @@map("cms_pages")
+}
+
+model CmsPageVersion {
+  id        String   @id @default(cuid())
+  pageId    String
+  version   Int
+  title     String
+  content   String   @db.Text
+  savedBy   String   // admin user id
+  changeLog String?
+  createdAt DateTime @default(now())
+
+  page CmsPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, version])
+  @@index([pageId])
+  @@map("cms_page_versions")
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────
+
+model Notification {
+  id            String              @id @default(cuid())
+  customerId    String?
+  adminUserId   String?
+  sentBy        String?             // admin user id who sent it
+  channel       NotificationChannel
+  status        NotificationStatus  @default(PENDING)
+  subject       String?
+  body          String              @db.Text
+  templateId    String?
+  variables     Json?
+  recipientRef  String              // email / phone / device token
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failureReason String?
+  retryCount    Int                 @default(0)
+  metadata      Json?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([channel, status])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────────
+// SECURITY
+// ─────────────────────────────────────────────
+
+model BlockedIp {
+  id         String    @id @default(cuid())
+  ipAddress  String    @unique
+  reason     String
+  blockedBy  String    // admin user id
+  expiresAt  DateTime?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+
+  @@index([ipAddress, isActive])
+  @@map("blocked_ips")
+}
+
+// ─────────────────────────────────────────────
+// AUDIT & ACTIVITY LOGS
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id           String      @id @default(cuid())
+  adminUserId  String?
+  action       AuditAction
+  resource     String      // e.g. "booking", "customer"
+  resourceId   String?     // the id of the affected resource
+  description  String
+  metadata     Json?       // before/after snapshots
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime    @default(now())
+
+  adminUser AdminUser? @relation("AdminAuditLogs", fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  // Immutable: no update/delete operations are allowed in application code
+  @@index([adminUserId])
+  @@index([resource, resourceId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  customerId String
+  action     String
+  resource   String?
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+// ─────────────────────────────────────────────
+// SYSTEM SETTINGS
+// ─────────────────────────────────────────────
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  isSecret    Boolean  @default(false)
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
