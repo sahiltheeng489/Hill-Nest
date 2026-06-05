@@ -1,345 +1,224 @@
-"use client";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { getStats, type DashboardStats } from '../../services/adminApi';
+import { useAdminStore } from '../../store/adminStore';
+import StatCard from '../../components/admin/StatCard';
+import StatusBadge from '../../components/admin/StatusBadge';
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Navbar from "@/app/components/ui/layout/Navbar";
-import Footer from "@/app/components/ui/layout/Footer";
-import Container from "@/app/components/ui/ui/Container";
-import { buildApiUrl } from "@/services/api";
-import { AuthUser, getProfile, getStoredUser, getToken, logoutUser } from "@/services/authService";
-
-type Room = {
-  _id: string;
-  name: string;
-  price: number;
-  available?: boolean;
-  roomType?: string;
-};
-
-type Booking = {
-  _id: string;
-  room?: Room | null;
-  name: string;
-  email: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  status?: "pending" | "confirmed" | "cancelled";
-  createdAt: string;
-};
-
-function StatCard({
-  label,
-  value,
-  helper,
-}: {
-  label: string;
-  value: string;
-  helper: string;
-}) {
+function SimpleLineChart({ data }: { data: { date: string; value: number }[] }) {
+  if (!data.length) return <div className="h-32 flex items-center justify-center text-gray-300 text-sm">No data</div>;
+  const max = Math.max(...data.map(d => d.value), 1);
+  const points = data.map((d, i) => ({ x: (i / (data.length - 1)) * 100, y: 100 - (d.value / max) * 80 }));
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gray-400">{label}</p>
-      <p className="mt-3 font-serif text-3xl font-bold text-gray-900">{value}</p>
-      <p className="mt-1 text-sm text-gray-500">{helper}</p>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-24">
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#6366f1" stopOpacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d={`${pathD} L 100 100 L 0 100 Z`} fill="url(#lineGrad)" />
+      <path d={pathD} fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+}
+
+function DonutChart({ data }: { data: { status: string; count: number }[] }) {
+  const total = data.reduce((s, d) => s + d.count, 0);
+  const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  let cumPct = 0;
+
+  return (
+    <div className="flex items-center gap-4">
+      <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
+        <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#f3f4f6" strokeWidth="3.8" />
+        {data.map((d, i) => {
+          const pct = total ? (d.count / total) * 100 : 0;
+          const offset = cumPct;
+          cumPct += pct;
+          return (
+            <circle key={d.status} cx="18" cy="18" r="15.9155" fill="transparent"
+              stroke={colors[i % colors.length]} strokeWidth="3.8"
+              strokeDasharray={`${pct} ${100 - pct}`}
+              strokeDashoffset={100 - offset}
+            />
+          );
+        })}
+        <text x="18" y="20" textAnchor="middle" className="rotate-90" style={{ fontSize: '8px', fill: '#111', fontWeight: 700 }}>{total}</text>
+      </svg>
+      <div className="space-y-1.5">
+        {data.map((d, i) => (
+          <div key={d.status} className="flex items-center gap-2 text-xs text-gray-600">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: colors[i % colors.length] }} />
+            <span className="capitalize">{d.status.toLowerCase().replace('_', ' ')}</span>
+            <span className="ml-auto font-semibold text-gray-800">{d.count}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-export default function AdminPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const [error, setError] = useState("");
+export default function AdminDashboard() {
+  const { state } = useAdminStore();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    let isMounted = true;
+    getStats()
+      .then(setStats)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
-    const loadAdminDashboard = async () => {
-      const stored = getStoredUser();
-      if (!stored) {
-        router.replace("/login?next=/admin");
-        return;
-      }
+  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const user = state.adminUser;
+  const firstName = user?.firstName ?? 'Admin';
 
-      if (stored.role !== "admin") {
-        router.replace("/user");
-        return;
-      }
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <p className="text-gray-600 font-medium">Failed to load dashboard</p>
+          <p className="text-gray-400 text-sm mt-1">{error}</p>
+          <button onClick={() => window.location.reload()} className="mt-3 text-indigo-600 text-sm font-medium hover:underline">Retry</button>
+        </div>
+      </div>
+    );
+  }
 
-      setUser(stored);
-
-      try {
-        const profile = await getProfile();
-        if (!isMounted) return;
-
-        if (!profile?.user) {
-          throw new Error("Unable to load your profile");
-        }
-
-        if (profile.user.role !== "admin") {
-          router.replace("/user");
-          return;
-        }
-
-        setUser(profile.user);
-
-        const token = getToken();
-        if (!token) {
-          throw new Error("You must be logged in to view the admin dashboard");
-        }
-
-        const [roomsRes, bookingsRes] = await Promise.all([
-          fetch(buildApiUrl("/rooms")),
-          fetch(buildApiUrl("/bookings"), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        if (!isMounted) return;
-
-        const roomsData: Room[] = roomsRes.ok ? await roomsRes.json() : [];
-        const bookingsData: Booking[] = bookingsRes.ok ? await bookingsRes.json() : [];
-
-        setRooms(roomsData);
-        setBookings(bookingsData);
-        setStatus("ready");
-      } catch (currentError) {
-        if (!isMounted) return;
-        setError(currentError instanceof Error ? currentError.message : "Unable to load admin dashboard");
-        setStatus("error");
-      }
-    };
-
-    void loadAdminDashboard();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [router]);
-
-  const metrics = useMemo(() => {
-    const confirmedBookings = bookings.filter((booking) => booking.status === "confirmed");
-    const pendingBookings = bookings.filter((booking) => booking.status === "pending");
-    const cancelledBookings = bookings.filter((booking) => booking.status === "cancelled");
-    const availableRooms = rooms.filter((room) => room.available !== false);
-    const estimatedRevenue = confirmedBookings.reduce((sum, booking) => {
-      if (!booking.room?.price) return sum;
-      const checkIn = new Date(booking.checkIn).getTime();
-      const checkOut = new Date(booking.checkOut).getTime();
-      const nights = Math.max(1, Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)));
-      return sum + booking.room.price * nights;
-    }, 0);
-
-    return {
-      totalBookings: bookings.length,
-      confirmedBookings: confirmedBookings.length,
-      pendingBookings: pendingBookings.length,
-      cancelledBookings: cancelledBookings.length,
-      totalRooms: rooms.length,
-      availableRooms: availableRooms.length,
-      estimatedRevenue,
-    };
-  }, [bookings, rooms]);
-
-  const handleLogout = () => {
-    logoutUser();
-    router.push("/");
-  };
+  const ov = stats?.overview;
 
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-[#f5f7f5] pt-24">
-        <Container>
-          <section className="py-12">
-            <div className="rounded-[2rem] border border-gray-100 bg-gradient-to-br from-slate-950 via-green-950 to-slate-900 p-8 text-white shadow-xl">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Admin Panel</p>
-                  <h1 className="mt-3 font-serif text-4xl font-bold">Control center for HillNest</h1>
-                  <p className="mt-3 max-w-2xl text-sm text-emerald-50/80">
-                    Review booking activity, room inventory, and the current operating snapshot for the property.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/bookings"
-                    className="inline-flex items-center justify-center rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
-                  >
-                    View all bookings
-                  </Link>
-                  <Link
-                    href="/rooms"
-                    className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
-                  >
-                    Browse rooms
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:border-red-300 hover:bg-red-500/20"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
+    <div className="space-y-6 animate-fade-up">
+      {/* Welcome Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{today}</p>
+        </div>
+        <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          Refresh
+        </button>
+      </div>
 
-              {user ? (
-                <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-emerald-50/80">
-                  <span className="rounded-full bg-white/10 px-3 py-1">{user.name}</span>
-                  <span className="rounded-full bg-white/10 px-3 py-1">{user.email}</span>
-                  <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-emerald-200">Role: {user.role}</span>
-                </div>
-              ) : null}
+      {/* Primary Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Bookings" value={ov?.totalBookings ?? 0} change={ov?.bookingChange} icon="📅" color="indigo" loading={loading} />
+        <StatCard title="Total Revenue" value={ov?.totalRevenue ?? 0} change={ov?.revenueChange} icon="💰" color="green" suffix="₹" loading={loading} />
+        <StatCard title="Total Customers" value={ov?.totalCustomers ?? 0} icon="👥" color="blue" loading={loading} />
+        <StatCard title="Failed Payments" value={ov?.failedPayments ?? 0} icon="⚠️" color="red" loading={loading} />
+      </div>
+
+      {/* Secondary Stats Row */}
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard title="Pending Refunds" value={ov?.pendingRefunds ?? 0} icon="↩️" color="amber" loading={loading} />
+        <StatCard title="Open Tickets" value={ov?.openTickets ?? 0} icon="🎫" color="purple" loading={loading} />
+        <StatCard title="New Customers" value={ov?.newCustomersThisMonth ?? 0} icon="🌱" color="green" loading={loading} />
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-5 gap-4">
+        {/* Revenue chart */}
+        <div className="col-span-3 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold text-gray-900">Revenue (Last 30 Days)</h3>
+              <p className="text-xs text-gray-400 mt-0.5">Daily earnings in ₹</p>
             </div>
+            <div className="text-right">
+              <p className="text-xl font-bold text-gray-900">₹{(ov?.revenueThisMonth ?? 0).toLocaleString('en-IN')}</p>
+              <p className="text-xs text-gray-400">This month</p>
+            </div>
+          </div>
+          {loading ? <div className="h-24 skeleton" /> : <SimpleLineChart data={stats?.charts.revenueByDay ?? []} />}
+        </div>
 
-            {status === "loading" && (
-              <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="skeleton h-32 rounded-3xl" />
+        {/* Bookings by status donut */}
+        <div className="col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <h3 className="font-semibold text-gray-900 mb-4">Bookings by Status</h3>
+          {loading ? <div className="h-24 skeleton" /> : (
+            stats?.charts.bookingsByStatus?.length
+              ? <DonutChart data={stats.charts.bookingsByStatus} />
+              : <div className="text-center text-gray-300 text-sm py-8">No booking data</div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="grid grid-cols-11 gap-4">
+        {/* Recent Bookings */}
+        <div className="col-span-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="font-semibold text-gray-900">Recent Bookings</h3>
+            <a href="/admin/bookings" className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">View all →</a>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Customer</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Room</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {loading ? Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}><td colSpan={4} className="px-4 py-3"><div className="h-4 skeleton" /></td></tr>
+                )) : (stats?.recentBookings ?? []).slice(0, 8).map(b => (
+                  <tr key={b.id} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => window.location.href = '/admin/bookings'}>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-gray-800 truncate max-w-[120px]">{b.customer?.name ?? '—'}</p>
+                      <p className="text-xs text-gray-400 truncate max-w-[120px]">{b.customer?.email}</p>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 truncate max-w-[100px]">{b.roomName}</td>
+                    <td className="px-4 py-3 text-gray-800 font-medium">₹{Number(b.totalAmount).toLocaleString('en-IN')}</td>
+                    <td className="px-4 py-3"><StatusBadge value={b.status} /></td>
+                  </tr>
                 ))}
-              </div>
+              </tbody>
+            </table>
+            {!loading && !stats?.recentBookings?.length && (
+              <div className="text-center py-8 text-gray-400 text-sm">No recent bookings</div>
             )}
+          </div>
+        </div>
 
-            {status === "error" && (
-              <div className="mt-10 rounded-3xl border border-red-200 bg-red-50 p-6 text-red-700">
-                <p className="text-lg font-semibold">Unable to load admin dashboard</p>
-                <p className="mt-2 text-sm">{error}</p>
-              </div>
-            )}
-
-            {status === "ready" && (
-              <>
-                <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-                  <StatCard
-                    label="Bookings"
-                    value={String(metrics.totalBookings)}
-                    helper={`${metrics.confirmedBookings} confirmed · ${metrics.pendingBookings} pending`}
-                  />
-                  <StatCard
-                    label="Rooms"
-                    value={String(metrics.totalRooms)}
-                    helper={`${metrics.availableRooms} available right now`}
-                  />
-                  <StatCard
-                    label="Revenue"
-                    value={`₹${metrics.estimatedRevenue.toLocaleString("en-IN")}`}
-                    helper="Estimated from confirmed bookings"
-                  />
-                  <StatCard
-                    label="Cancellations"
-                    value={String(metrics.cancelledBookings)}
-                    helper="Monitor churn and follow-up needs"
-                  />
+        {/* Recent Activity Feed */}
+        <div className="col-span-5 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-900">Recent Activity</h3>
+          </div>
+          <div className="p-4 space-y-3 overflow-y-auto max-h-80">
+            {loading ? Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="w-7 h-7 rounded-full skeleton flex-shrink-0" />
+                <div className="flex-1 space-y-1">
+                  <div className="h-3 skeleton w-3/4" />
+                  <div className="h-3 skeleton w-1/2" />
                 </div>
-
-                <div className="mt-10 grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-                  <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h2 className="font-serif text-2xl font-bold text-gray-900">Recent bookings</h2>
-                        <p className="mt-1 text-sm text-gray-500">Admin view of the latest guest activity.</p>
-                      </div>
-                      <Link
-                        href="/bookings"
-                        className="text-sm font-semibold text-green-700 hover:text-green-800 hover:underline"
-                      >
-                        Open bookings
-                      </Link>
-                    </div>
-
-                    <div className="mt-6 space-y-4">
-                      {bookings.slice(0, 6).map((booking) => (
-                        <article
-                          key={booking._id}
-                          className="rounded-2xl border border-gray-100 bg-gray-50/80 p-4"
-                        >
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <p className="font-semibold text-gray-900">{booking.room?.name || "Room unavailable"}</p>
-                              <p className="mt-1 text-sm text-gray-500">{booking.name} · {booking.email}</p>
-                            </div>
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                              booking.status === "confirmed"
-                                ? "bg-emerald-50 text-emerald-700"
-                                : booking.status === "cancelled"
-                                  ? "bg-red-50 text-red-700"
-                                  : "bg-amber-50 text-amber-700"
-                            }`}>
-                              {booking.status || "pending"}
-                            </span>
-                          </div>
-                          <div className="mt-3 flex flex-wrap gap-4 text-xs text-gray-500">
-                            <span>Check-in: {new Date(booking.checkIn).toLocaleDateString("en-IN")}</span>
-                            <span>Check-out: {new Date(booking.checkOut).toLocaleDateString("en-IN")}</span>
-                            <span>Guests: {booking.guests}</span>
-                          </div>
-                        </article>
-                      ))}
-                      {bookings.length === 0 && (
-                        <p className="rounded-2xl border border-dashed border-gray-200 p-6 text-sm text-gray-500">
-                          No bookings yet.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-                      <h2 className="font-serif text-2xl font-bold text-gray-900">Room inventory</h2>
-                      <p className="mt-1 text-sm text-gray-500">Quick scan of room status and price points.</p>
-                      <div className="mt-5 space-y-3">
-                        {rooms.slice(0, 6).map((room) => (
-                          <div key={room._id} className="flex items-center justify-between rounded-2xl bg-gray-50 px-4 py-3">
-                            <div>
-                              <p className="font-semibold text-gray-900">{room.name}</p>
-                              <p className="text-xs text-gray-500">{room.roomType || "Standard"} · ₹{room.price.toLocaleString("en-IN")}/night</p>
-                            </div>
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                              room.available === false ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"
-                            }`}>
-                              {room.available === false ? "Unavailable" : "Available"}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-                      <h2 className="font-serif text-2xl font-bold text-gray-900">Actions</h2>
-                      <div className="mt-5 grid gap-3">
-                        <Link
-                          href="/bookings"
-                          className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-green-400 hover:text-green-700"
-                        >
-                          Review reservation queue
-                        </Link>
-                        <Link
-                          href="/rooms"
-                          className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-green-400 hover:text-green-700"
-                        >
-                          Check room catalog
-                        </Link>
-                        <Link
-                          href="/"
-                          className="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:border-green-400 hover:text-green-700"
-                        >
-                          Return to homepage
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+              </div>
+            )) : (stats?.recentActivity ?? []).map(a => (
+              <div key={a.id} className="flex gap-3 items-start">
+                <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-bold flex-shrink-0">
+                  {a.adminUser ? `${a.adminUser.firstName[0]}${a.adminUser.lastName[0]}` : '?'}
                 </div>
-              </>
-            )}
-          </section>
-        </Container>
-      </main>
-      <Footer />
-    </>
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-700 truncate">{a.description}</p>
+                  <p className="text-xs text-gray-400">{new Date(a.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
