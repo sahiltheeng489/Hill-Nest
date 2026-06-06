@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { buildApiUrl } from "@/services/api";
@@ -39,7 +39,7 @@ function StatCard({ value, label, icon, colorClass, delay }: { value: number; la
   );
 }
 
-export default function UserPage() {
+function UserDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -262,5 +262,13 @@ export default function UserPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function UserPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[#f5f7f5]" />}>
+      <UserDashboard />
+    </Suspense>
   );
 }
