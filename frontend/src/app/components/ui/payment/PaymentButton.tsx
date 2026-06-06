@@ -120,7 +120,7 @@ export default function PaymentButton({
           email: bookingPayload.email,
         },
         theme: {
-          color: "#15803d", // green-700
+          color: "#325F57",
         },
 
         // ── Step 3: On payment success → verify server-side ──────────────
@@ -189,18 +189,18 @@ export default function PaymentButton({
   return (
     <div className="space-y-4">
       {/* Price summary card */}
-      <div className="rounded-2xl border border-green-100 bg-gradient-to-br from-green-50 to-emerald-50 p-4">
-        <div className="flex items-center justify-between text-sm text-gray-600">
+      <div className="rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur-md">
+        <div className="flex items-center justify-between text-sm text-white/65">
           <span>{typeof pricePerNight === "number" && !isNaN(pricePerNight) ? `₹${pricePerNight.toLocaleString("en-IN")}` : "N/A"} × {nights} night{nights !== 1 ? "s" : ""}</span>
-          <span className="font-medium">{typeof totalAmount === "number" && !isNaN(totalAmount) ? `₹${totalAmount.toLocaleString("en-IN")}` : "N/A"}</span>
+          <span className="font-medium text-white">{typeof totalAmount === "number" && !isNaN(totalAmount) ? `₹${totalAmount.toLocaleString("en-IN")}` : "N/A"}</span>
         </div>
-        <div className="mt-2 flex items-center justify-between border-t border-green-100 pt-2">
-          <span className="font-semibold text-gray-800">Total</span>
-          <span className="text-xl font-extrabold text-green-700">
+        <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2">
+          <span className="font-semibold text-white">Total</span>
+          <span className="text-xl font-extrabold text-[#6F9487]">
             {typeof totalAmount === "number" && !isNaN(totalAmount) ? `₹${totalAmount.toLocaleString("en-IN")}` : "N/A"}
           </span>
         </div>
-        <p className="mt-1 text-xs text-gray-400">Secure payment powered by Razorpay</p>
+        <p className="mt-1 text-xs text-white/40">Secure payment powered by Razorpay</p>
       </div>
 
       {/* Pay button */}
@@ -208,7 +208,7 @@ export default function PaymentButton({
         type="button"
         onClick={handlePay}
         disabled={disabled || loading || !scriptReady || nights <= 0 || typeof totalAmount !== "number" || isNaN(totalAmount)}
-        className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-green-700 to-emerald-600 px-6 py-4 text-base font-bold text-white shadow-lg shadow-green-900/20 transition-all duration-300 hover:from-green-600 hover:to-emerald-500 hover:shadow-xl hover:shadow-green-900/30 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+        className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-6 py-4 text-base font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
       >
         {/* Shimmer effect */}
         {!loading && !disabled && (

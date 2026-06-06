@@ -16,14 +16,14 @@ export default function WhatsAppButton() {
       className="fixed bottom-24 right-6 z-[80] group flex items-center gap-3 pointer-events-auto touch-manipulation"
     >
       {/* Tooltip label */}
-      <span className="opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap">
+      <span className="pointer-events-none whitespace-nowrap rounded-lg border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all duration-300 translate-x-2 backdrop-blur-md group-hover:translate-x-0 group-hover:opacity-100">
         Chat on WhatsApp
       </span>
 
       {/* Button */}
-      <div className="relative w-14 h-14 flex items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-green-500/40 hover:shadow-green-500/60 hover:scale-110 transition-all duration-300">
+      <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#163E3C] via-[#325F57] to-[#6F9487] shadow-lg transition-all duration-300 hover:scale-110">
         {/* Pulsing ring */}
-        <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-30" />
+        <span className="absolute inset-0 rounded-full bg-[#6F9487] animate-ping opacity-20" />
 
         {/* WhatsApp SVG icon */}
         <svg

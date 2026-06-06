@@ -10,12 +10,14 @@ type AuthFormProps = {
   mode: "login" | "register";
 };
 
-const features = [
-  { icon: "🏔️", text: "Stunning mountain views" },
-  { icon: "☕", text: "Complimentary breakfast daily" },
-  { icon: "🛜", text: "High-speed Wi-Fi everywhere" },
-  { icon: "✅", text: "Free cancellation policy" },
-];
+const shellClass =
+  "relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,#04151A_0%,#092828_52%,#04151A_100%)]";
+const overlayClass =
+  "absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(111,148,135,0.16),transparent_30%),radial-gradient(circle_at_75%_20%,rgba(50,95,87,0.18),transparent_28%),linear-gradient(180deg,rgba(4,21,26,0.42)_0%,rgba(4,21,26,0.78)_100%)]";
+const cardClass =
+  "relative w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(4,21,26,0.58),rgba(9,40,40,0.36))] p-6 shadow-[0_24px_80px_rgba(2,6,23,0.36)] backdrop-blur-md sm:p-8 lg:p-10";
+const inputClass =
+  "input-base border-white/10 bg-white/8 text-white placeholder:text-slate-400 backdrop-blur-xl focus:border-teal-300/40 focus:shadow-[0_0_0_3px_rgba(56,189,248,0.1)]";
 
 export default function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
@@ -75,226 +77,149 @@ export default function AuthForm({ mode }: AuthFormProps) {
     }
   };
 
-  return (
-    <main className="min-h-screen flex">
-      {/* ── Left panel — hero image with overlay ── */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <Image
-          src="/hero.png"
-          alt="HillNest Homestay"
-          fill
-          priority
-          className="object-cover"
-          sizes="50vw"
-        />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-green-950/50 to-black/60" />
+  const Shell = (
+    <main className={shellClass}>
+      <Image
+        src="/cabin2.png"
+        alt="HillNest cabin"
+        fill
+        priority
+        className="object-cover"
+        sizes="100vw"
+      />
+      <div className={overlayClass} />
 
-        {/* Left panel content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center shadow-lg">
-              <span className="text-xl">🌿</span>
-            </div>
-            <span className="text-2xl font-bold text-white">
-              Hill<span className="text-green-400">Nest</span>
-            </span>
-          </Link>
-
-          {/* Central quote */}
-          <div className="animate-slide-in-left delay-200">
-            <h2 className="font-serif text-4xl font-bold text-white leading-snug">
-              Your perfect<br />
-              <span className="text-green-400">mountain escape</span><br />
-              awaits you.
-            </h2>
-            <p className="mt-4 text-gray-300 text-sm leading-relaxed max-w-xs">
-              Sign in to manage your bookings, explore rooms, and plan your next stay at HillNest.
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
+        <div className={cardClass}>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_42%)]" />
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <Link href="/" className="text-2xl font-black tracking-tight text-white">
+              HillNest
+            </Link>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-300">
+              {isRegister ? "Create account" : "Sign in"}
             </p>
-
-            {/* Feature list */}
-            <ul className="mt-8 space-y-3">
-              {features.map(({ icon, text }) => (
-                <li key={text} className="flex items-center gap-3 text-sm text-gray-300">
-                  <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-base flex-shrink-0">
-                    {icon}
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ul>
           </div>
 
-          {/* Bottom testimonial */}
-          <div className="glass rounded-2xl p-5 animate-fade-up delay-400">
-            <p className="text-sm text-gray-200 italic leading-relaxed">
-              &ldquo;Absolutely magical stay! The valley views and warm hospitality made it unforgettable.&rdquo;
-            </p>
-            <div className="flex items-center gap-3 mt-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-sm">
-                P
-              </div>
-              <div>
-                <p className="text-white text-xs font-semibold">Priya Sharma</p>
-                <div className="flex gap-0.5 mt-0.5">
-                  {[1,2,3,4,5].map(i => <span key={i} className="text-amber-400 text-xs">★</span>)}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Right panel — form ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#f8faf8]">
-        <div className="w-full max-w-md animate-scale-in">
-
-          {/* Mobile brand */}
-          <div className="lg:hidden mb-8 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center">
-              <span className="text-lg">🌿</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              Hill<span className="text-green-700">Nest</span>
-            </span>
-          </div>
-
-          {/* Heading */}
           <div className="mb-8">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              {isRegister ? "New Account" : "Welcome Back"}
-            </span>
-            <h1 className="mt-4 font-serif text-3xl font-bold text-gray-900">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-200">
+              {isRegister ? "Join us" : "Welcome back"}
+            </p>
+            <h1 className="mt-3 text-4xl font-black tracking-tight text-white sm:text-5xl">
               {isRegister ? "Create your account" : "Sign in to HillNest"}
             </h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-300 sm:text-base">
               {isRegister
-                ? "Join HillNest to manage bookings and plan your perfect stay."
-                : "Enter your credentials to access your dashboard."}
+                ? "Join HillNest and plan your perfect stay."
+                : "Enter your credentials to access your dashboard and manage your stay."}
             </p>
           </div>
 
-          {/* Form card */}
-          <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/60 border border-gray-100 p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* Name (register only) */}
-              {isRegister && (
-                <div className="animate-fade-up">
-                  <label htmlFor="auth-name" className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
-                    Full Name
-                  </label>
-                  <input
-                    id="auth-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    placeholder="e.g. Priya Sharma"
-                    className="input-base"
-                  />
-                </div>
-              )}
-
-              {/* Email */}
-              <div className="animate-fade-up delay-100">
-                <label htmlFor="auth-email" className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
-                  Email Address
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {isRegister ? (
+              <div className="animate-fade-up">
+                <label htmlFor="auth-name" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-200">
+                  Full Name
                 </label>
                 <input
-                  id="auth-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="auth-name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
-                  placeholder="you@example.com"
-                  className="input-base"
+                  placeholder="e.g. Priya Sharma"
+                  className={inputClass}
                 />
               </div>
+            ) : null}
 
-              {/* Password */}
-              <div className="animate-fade-up delay-200">
-                <label htmlFor="auth-password" className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="auth-password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    placeholder="At least 6 characters"
-                    className="input-base pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-700 transition-colors text-sm"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
+            <div className={`animate-fade-up ${isRegister ? "delay-100" : ""}`}>
+              <label htmlFor={isRegister ? "auth-email" : "auth-email"} className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-200">
+                Email Address
+              </label>
+              <input
+                id="auth-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                className={inputClass}
+              />
+            </div>
 
-              {/* Error */}
-              {error && (
-                <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm animate-fade-up">
-                  <span className="text-base flex-shrink-0">⚠️</span>
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-                  <p>{success}</p>
-                  {devVerificationUrl ? (
-                    <a
-                      href={devVerificationUrl}
-                      className="mt-2 inline-flex font-semibold text-green-900 underline underline-offset-2"
-                    >
-                      Open development verification link
-                    </a>
-                  ) : null}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-md bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400"
-              >
-                {isSubmitting
-                  ? "Please wait..."
-                  : isRegister
-                    ? "Create account"
-                    : "Login"}
-              </button>
-
-              {/* Switch mode */}
-              <p className="mt-6 text-center text-sm text-gray-500">
-                {isRegister ? "Already have an account?" : "New to HillNest?"}{" "}
-                <Link
-                  href={switchModeHref}
-                  className="font-semibold text-green-700 hover:text-green-800 hover:underline underline-offset-2 transition-colors"
+            <div className={`animate-fade-up ${isRegister ? "delay-200" : "delay-100"}`}>
+              <label htmlFor="auth-password" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-200">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="auth-password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="At least 6 characters"
+                  className="input-base pr-12 border-white/10 bg-white/8 text-white placeholder:text-slate-400 backdrop-blur-xl focus:border-teal-300/40 focus:shadow-[0_0_0_3px_rgba(56,189,248,0.1)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-300 transition-colors hover:text-white"
+                  tabIndex={-1}
                 >
-                  {isRegister ? "Sign in" : "Create an account"}
-                </Link>
-              </p>
-            </form>
-          </div>
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
 
-          {/* Back link */}
-          <div className="mt-6 text-center">
+            {error && (
+              <div className="flex items-start gap-3 rounded-2xl border border-rose-300/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-50 backdrop-blur-md animate-fade-up">
+                <span className="text-base flex-shrink-0">⚠️</span>
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="rounded-2xl border border-teal-300/20 bg-teal-500/10 px-4 py-3 text-sm text-teal-50 backdrop-blur-md">
+                <p>{success}</p>
+                {devVerificationUrl ? (
+                  <a
+                    href={devVerificationUrl}
+                    className="mt-2 inline-flex font-semibold text-teal-100 underline underline-offset-2"
+                  >
+                    Open development verification link
+                  </a>
+                ) : null}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full rounded-2xl border border-white/10 bg-gradient-to-r from-teal-500/90 via-teal-500/90 to-slate-500/90 px-5 py-3.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(15,23,42,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-[1.01] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Please wait..." : isRegister ? "Create account" : "Sign in"}
+            </button>
+
+            <p className="pt-2 text-center text-sm text-slate-300">
+              {isRegister ? "Already have an account? " : "New to HillNest? "}
+              <Link
+                href={switchModeHref}
+                className="font-semibold text-white underline decoration-white/40 underline-offset-4 transition-colors hover:text-teal-100 hover:decoration-teal-100"
+              >
+                {isRegister ? "Sign in" : "Create an account"}
+              </Link>
+            </p>
+          </form>
+
+          <div className="relative z-10 mt-6 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-green-700 transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm text-slate-300 transition-colors hover:text-white"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Back to HillNest
@@ -304,4 +229,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
       </div>
     </main>
   );
+
+  return Shell;
 }

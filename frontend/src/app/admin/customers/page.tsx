@@ -56,7 +56,7 @@ export default function CustomersPage() {
         <Link href={`/admin/customers/${r.id}`} className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">View →</Link>
         {r.status === 'ACTIVE'
           ? <button onClick={e => { e.stopPropagation(); setConfirmAction({ customer: r, newStatus: 'SUSPENDED' }); }} className="text-red-500 hover:text-red-700 text-xs font-medium">Suspend</button>
-          : <button onClick={e => { e.stopPropagation(); setConfirmAction({ customer: r, newStatus: 'ACTIVE' }); }} className="text-green-600 hover:text-green-800 text-xs font-medium">Activate</button>
+          : <button onClick={e => { e.stopPropagation(); setConfirmAction({ customer: r, newStatus: 'ACTIVE' }); }} className="text-cyan-600 hover:text-cyan-800 text-xs font-medium">Activate</button>
         }
       </div>
     )},

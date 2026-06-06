@@ -44,8 +44,8 @@ export default function PaymentsPage() {
   const totalFailed = (stats as any)?.byStatus?.find((s: any) => s.status === 'FAILED')?._count?._all ?? 0;
 
   return (
-    <div className="space-y-5">
-      <div><h1 className="text-xl font-bold text-gray-900">Payments</h1><p className="text-gray-400 text-sm">Monitor all payment transactions</p></div>
+    <div className="space-y-5 text-white">
+      <div><h1 className="text-xl font-bold text-white">Payments</h1><p className="text-sm text-white/45">Monitor all payment transactions</p></div>
 
       <div className="grid grid-cols-3 gap-4">
         <StatCard title="Total Revenue" value={totalRevenue} icon="💰" color="green" suffix="₹" loading={loading} />
@@ -53,12 +53,12 @@ export default function PaymentsPage() {
         <StatCard title="Total Transactions" value={data?.pagination?.total ?? 0} icon="💳" color="blue" loading={loading} />
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 flex gap-3">
+      <div className="flex gap-3 rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur-2xl">
         <div className="relative flex-1">
-          <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search by transaction ID…" className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-100" />
+          <svg className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-white/35" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search by transaction ID…" className="w-full rounded-lg border border-white/10 bg-white/8 pl-9 pr-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md" />
         </div>
-        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none text-gray-600">
+        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white focus:outline-none backdrop-blur-md">
           {STATUSES.map(s => <option key={s} value={s}>{s || 'All Statuses'}</option>)}
         </select>
       </div>

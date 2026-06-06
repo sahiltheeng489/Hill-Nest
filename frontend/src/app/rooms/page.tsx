@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RoomCard from "@/app/components/ui/room/RoomCard";
 import Navbar from "@/app/components/ui/layout/Navbar";
 import Footer from "@/app/components/ui/layout/Footer";
@@ -40,20 +40,20 @@ const fallbackRooms: Room[] = [
 
 function RoomCardSkeleton() {
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-      <div className="h-60 w-full bg-gray-100 animate-pulse" />
+    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/8 backdrop-blur-md">
+      <div className="h-60 w-full animate-pulse bg-slate-700/40" />
       <div className="p-6 space-y-3">
-        <div className="h-6 w-3/4 rounded-lg bg-gray-100 animate-pulse" />
-        <div className="h-4 w-full rounded-lg bg-gray-100 animate-pulse" />
-        <div className="h-4 w-5/6 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="h-6 w-3/4 animate-pulse rounded-lg bg-slate-700/40" />
+        <div className="h-4 w-full animate-pulse rounded-lg bg-slate-700/40" />
+        <div className="h-4 w-5/6 animate-pulse rounded-lg bg-slate-700/40" />
         <div className="mt-4 flex gap-2">
           {[1, 2, 3].map((k) => (
-            <div key={k} className="h-7 w-20 rounded-lg bg-gray-100 animate-pulse" />
+            <div key={k} className="h-7 w-20 animate-pulse rounded-lg bg-slate-700/40" />
           ))}
         </div>
-        <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-          <div className="h-8 w-28 rounded-lg bg-gray-100 animate-pulse" />
-          <div className="h-10 w-28 rounded-xl bg-gray-100 animate-pulse" />
+        <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+          <div className="h-8 w-28 animate-pulse rounded-lg bg-slate-700/40" />
+          <div className="h-10 w-28 animate-pulse rounded-xl bg-slate-700/40" />
         </div>
       </div>
     </div>
@@ -61,6 +61,7 @@ function RoomCardSkeleton() {
 }
 
 export default function RoomsPage() {
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
   const [queryString] = useState(() =>
     typeof window === "undefined" ? "" : window.location.search.replace(/^\?/, "")
   );
@@ -97,12 +98,55 @@ export default function RoomsPage() {
     };
   }, [queryString]);
 
+  useEffect(() => {
+    const background = backgroundRef.current;
+    if (!background) return;
+
+    let frame = 0;
+
+    const updateBackground = () => {
+      const scrollRange = Math.max(window.innerHeight * 0.7, 560);
+      const progress = Math.min(Math.max(window.scrollY / scrollRange, 0), 1);
+      const panX = progress * 34;
+      const panY = progress * 44;
+      const scale = 1.06 + progress * 0.045;
+
+      background.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+      background.style.filter = `brightness(${0.62 + progress * 0.12}) saturate(${0.9 + progress * 0.16})`;
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        updateBackground();
+        frame = 0;
+      });
+    };
+
+    updateBackground();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-green-50/30 to-white pt-24">
+      <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_28%),linear-gradient(180deg,#08111e_0%,#0b1220_58%,#050816_100%)] pt-24 text-slate-100">
+        <div
+          ref={backgroundRef}
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-70 will-change-transform transition-[transform,filter] duration-150 ease-out"
+          style={{ backgroundImage: 'url("/forest.png")' }}
+        />
+        <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(8,17,30,0.58)_0%,rgba(11,18,32,0.42)_18%,rgba(5,8,22,0.9)_18%,rgba(5,8,22,0.98)_100%)]" />
+
         <Container>
-          <div className="py-16">
+          <div className="relative z-10 py-16">
             <SectionTitle
               label="Browse Rooms"
               title="Find Your Perfect Room"
@@ -110,13 +154,13 @@ export default function RoomsPage() {
             />
 
             {error && (
-              <div className="mt-10 flex items-start gap-3 max-w-xl mx-auto bg-red-50 border border-red-200 rounded-2xl p-5 animate-fade-up">
+            <div className="mt-10 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border border-rose-300/20 bg-rose-500/10 p-5 text-rose-50 backdrop-blur-md animate-fade-up">
                 <span className="text-xl flex-shrink-0">⚠️</span>
                 <div>
-                  <p className="font-semibold text-red-700 text-sm">{error}</p>
+                  <p className="font-semibold text-sm">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="mt-2 text-xs text-red-600 underline underline-offset-2 hover:text-red-800"
+                    className="animate-button-in mt-2 text-xs text-teal-100 underline underline-offset-2 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:text-white"
                   >
                     Try again
                   </button>
@@ -131,22 +175,22 @@ export default function RoomsPage() {
                 ? (
                   <div className="py-20 text-center animate-fade-up md:col-span-2 lg:col-span-3">
                     <p className="text-5xl mb-4">🏡</p>
-                    <p className="text-gray-500 text-lg font-semibold">No rooms available right now.</p>
-                    <p className="text-gray-400 text-sm mt-2">Please check back later or contact us directly.</p>
+                    <p className="text-slate-200 text-lg font-semibold">No rooms available right now.</p>
+                    <p className="text-slate-400 text-sm mt-2">Please check back later or contact us directly.</p>
                   </div>
                 )
                 : rooms.map((room, i) => (
                   <div key={room._id ?? room.name} className="animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                    <RoomCard
-                      roomId={room._id}
-                      title={room.name}
-                      price={typeof room.price === "number" ? `₹${room.price.toLocaleString("en-IN")}` : "N/A"}
-                      image={room.image}
-                      description={room.description}
-                      bookHref={room._id ? `/booking?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(queryString).entries()), roomId: room._id }).toString()}#payment` : "/rooms"}
-                    />
-                  </div>
-                ))}
+                <RoomCard
+                  roomId={room._id}
+                  title={room.name}
+                  price={typeof room.price === "number" ? `₹${room.price.toLocaleString("en-IN")}` : "N/A"}
+                  image={room.image}
+                  description={room.description}
+                  bookHref={room._id ? `/booking?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(queryString).entries()), roomId: room._id }).toString()}#payment` : "/rooms"}
+                />
+              </div>
+            ))}
             </div>
           </div>
         </Container>

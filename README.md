@@ -228,13 +228,4 @@ Treat this README as the major documentation update for the current commit. It n
 - the gallery route consolidation around `/#gallery`
 - the current security architecture summary and split-service layout
 
-### Future visual additions
 
-If you want the README to go even more visual later, the next easy step is to add:
-
-1. A live screenshots section
-2. A compact feature grid
-3. A deployment checklist
-4. A changelog per day
-
----

@@ -45,7 +45,7 @@ export default function CmsPage() {
     { key: 'updatedAt', label: 'Last Updated', render: (r: CmsPage) => new Date(r.updatedAt).toLocaleDateString('en-IN') },
     { key: 'actions', label: '', render: (r: CmsPage) => (
       <div className="flex gap-2">
-        {r.status !== 'PUBLISHED' && <button onClick={e => { e.stopPropagation(); handlePublish(r.id); }} disabled={actionLoading === r.id} className="text-green-600 hover:text-green-800 text-xs font-medium disabled:opacity-50">Publish</button>}
+        {r.status !== 'PUBLISHED' && <button onClick={e => { e.stopPropagation(); handlePublish(r.id); }} disabled={actionLoading === r.id} className="text-cyan-600 hover:text-cyan-800 text-xs font-medium disabled:opacity-50">Publish</button>}
         {r.status !== 'ARCHIVED' && <button onClick={e => { e.stopPropagation(); handleArchive(r.id); }} disabled={actionLoading === r.id} className="text-gray-400 hover:text-gray-600 text-xs font-medium disabled:opacity-50">Archive</button>}
       </div>
     )},

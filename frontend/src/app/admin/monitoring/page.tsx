@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getHealthStatus, getSystemMetrics } from '../../../services/adminApi';
 
 function HealthDot({ status }: { status: string }) {
-  const colors: Record<string, string> = { healthy: 'bg-green-400', degraded: 'bg-amber-400', down: 'bg-red-500' };
+  const colors: Record<string, string> = { healthy: 'bg-cyan-400', degraded: 'bg-amber-400', down: 'bg-red-500' };
   return <span className={`inline-block w-2.5 h-2.5 rounded-full ${colors[status] ?? 'bg-gray-300'}`} />;
 }
 
@@ -77,7 +77,7 @@ export default function MonitoringPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-gray-900">Service Health</h2>
           {health && (
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${health.overall === 'healthy' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${health.overall === 'healthy' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}`}>
               <HealthDot status={health.overall} />
               {health.overall === 'healthy' ? 'All Systems Operational' : 'Degraded Performance'}
             </div>
@@ -90,7 +90,7 @@ export default function MonitoringPage() {
                 <p className="font-medium text-gray-700 capitalize">{name}</p>
                 <HealthDot status={info.status} />
               </div>
-              <p className={`text-sm font-semibold ${info.status === 'healthy' ? 'text-green-600' : 'text-red-500'}`}>{info.status}</p>
+              <p className={`text-sm font-semibold ${info.status === 'healthy' ? 'text-cyan-600' : 'text-red-500'}`}>{info.status}</p>
               {info.latency !== undefined && <p className="text-xs text-gray-400 mt-1">{info.latency}ms latency</p>}
               {info.message && <p className="text-xs text-red-400 mt-1">{info.message}</p>}
             </div>

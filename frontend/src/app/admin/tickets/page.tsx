@@ -50,18 +50,18 @@ export default function TicketsPage() {
   ];
 
   return (
-    <div className="space-y-5">
-      <div><h1 className="text-xl font-bold text-gray-900">Support Tickets</h1><p className="text-gray-400 text-sm">Manage customer support tickets</p></div>
+    <div className="space-y-5 text-white">
+      <div><h1 className="text-xl font-bold text-white">Support Tickets</h1><p className="text-sm text-white/45">Manage customer support tickets</p></div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 flex gap-3 flex-wrap">
+      <div className="flex flex-wrap gap-3 rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur-2xl">
         <div className="relative flex-1 min-w-[200px]">
-          <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search tickets…" className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-100" />
+          <svg className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-white/35" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search tickets…" className="w-full rounded-lg border border-white/10 bg-white/8 pl-9 pr-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md" />
         </div>
-        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600">
+        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white backdrop-blur-md">
           {['', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map(s => <option key={s} value={s}>{s || 'All Statuses'}</option>)}
         </select>
-        <select value={priority} onChange={e => { setPriority(e.target.value); setPage(1); }} className="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600">
+        <select value={priority} onChange={e => { setPriority(e.target.value); setPage(1); }} className="rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white backdrop-blur-md">
           {['', 'LOW', 'MEDIUM', 'HIGH', 'URGENT'].map(s => <option key={s} value={s}>{s || 'All Priorities'}</option>)}
         </select>
       </div>

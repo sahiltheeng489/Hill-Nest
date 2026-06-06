@@ -43,10 +43,10 @@ export default function NotificationsPage() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 text-white">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-xl font-bold text-gray-900">Notifications</h1><p className="text-gray-400 text-sm">Manage and send notifications to customers</p></div>
-        <button onClick={() => setShowSend(true)} className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+        <div><h1 className="text-xl font-bold text-white">Notifications</h1><p className="text-sm text-white/45">Manage and send notifications to customers</p></div>
+        <button onClick={() => setShowSend(true)} className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-4 py-2 text-sm font-medium text-white">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
           Send Notification
         </button>
@@ -57,7 +57,7 @@ export default function NotificationsPage() {
         <div className="grid grid-cols-4 gap-4">
           {CHANNELS.map(ch => {
             const count = (stats.byChannel ?? []).find((s: any) => s.channel === ch)?._count?._all ?? 0;
-            return <div key={ch} className="bg-white rounded-xl border border-gray-200 p-4 text-center"><p className="text-2xl font-bold text-gray-900">{count}</p><p className="text-xs text-gray-400 mt-1">{ch}</p></div>;
+            return <div key={ch} className="rounded-xl border border-white/10 bg-white/8 p-4 text-center backdrop-blur-2xl"><p className="text-2xl font-bold text-white">{count}</p><p className="mt-1 text-xs text-white/40">{ch}</p></div>;
           })}
         </div>
       )}
@@ -67,32 +67,32 @@ export default function NotificationsPage() {
 
       {/* Send modal */}
       {showSend && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4">
-            <h2 className="text-lg font-bold text-gray-900">Send Notification</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(4,21,26,0.68)', backdropFilter: 'blur(8px)' }}>
+          <div className="w-full max-w-lg space-y-4 rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(4,21,26,0.94),rgba(9,40,40,0.82))] p-6 shadow-[0_24px_80px_rgba(2,6,23,0.42)] backdrop-blur-2xl">
+            <h2 className="text-lg font-bold text-white">Send Notification</h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Channel</label>
-                <select value={form.channel} onChange={e => setForm(p => ({ ...p, channel: e.target.value }))} className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2">
+                <label className="mb-1 block text-sm font-medium text-white/75">Channel</label>
+                <select value={form.channel} onChange={e => setForm(p => ({ ...p, channel: e.target.value }))} className="w-full rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white backdrop-blur-md">
                   {CHANNELS.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Recipient</label>
-                <input value={form.recipientRef} onChange={e => setForm(p => ({ ...p, recipientRef: e.target.value }))} placeholder="Email / Phone / Token" className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2" />
+                <label className="mb-1 block text-sm font-medium text-white/75">Recipient</label>
+                <input value={form.recipientRef} onChange={e => setForm(p => ({ ...p, recipientRef: e.target.value }))} placeholder="Email / Phone / Token" className="w-full rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 backdrop-blur-md" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-              <input value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} placeholder="Notification subject…" className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2" />
+              <label className="mb-1 block text-sm font-medium text-white/75">Subject</label>
+              <input value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} placeholder="Notification subject…" className="w-full rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 backdrop-blur-md" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Message Body</label>
-              <textarea value={form.body} onChange={e => setForm(p => ({ ...p, body: e.target.value }))} rows={4} placeholder="Notification content…" className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-100" />
+              <label className="mb-1 block text-sm font-medium text-white/75">Message Body</label>
+              <textarea value={form.body} onChange={e => setForm(p => ({ ...p, body: e.target.value }))} rows={4} placeholder="Notification content…" className="w-full resize-none rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md" />
             </div>
             <div className="flex gap-3 justify-end pt-2">
-              <button onClick={() => setShowSend(false)} className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">Cancel</button>
-              <button onClick={handleSend} disabled={sending || !form.body || !form.recipientRef} className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
+              <button onClick={() => setShowSend(false)} className="rounded-lg border border-white/10 bg-white/8 px-4 py-2 text-sm font-medium text-white/75 hover:bg-white/12">Cancel</button>
+              <button onClick={handleSend} disabled={sending || !form.body || !form.recipientRef} className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
                 {sending && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
                 {sending ? 'Sending…' : 'Send'}
               </button>

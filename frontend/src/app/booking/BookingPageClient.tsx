@@ -189,33 +189,33 @@ export default function BookingPageClient() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-green-50/40 via-white to-white pt-24">
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_28%),linear-gradient(180deg,#08111e_0%,#0b1220_58%,#050816_100%)] pt-24 text-slate-100">
         <Container>
           <div className="py-10 md:py-14">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-green-700">Secure booking</p>
-              <h1 className="mt-3 font-serif text-4xl font-extrabold leading-tight text-gray-950 md:text-5xl">
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-teal-200">Secure booking</p>
+              <h1 className="mt-3 text-4xl font-black leading-tight tracking-tight text-white md:text-5xl">
                 Complete your HillNest stay
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-500">
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
                 Confirm the room, choose dates, add guest details, then continue to payment. Your booking is checked against availability before it is created.
               </p>
             </div>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
               <form onSubmit={onSubmit} className="space-y-5">
-                <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md">
                   <div className="flex flex-wrap gap-3">
                     {["Room", "Dates", "Guest", "Payment"].map((step, index) => (
                       <div
                         key={step}
                         className={`flex min-h-11 flex-1 items-center gap-2 rounded-xl border px-3 text-sm font-semibold ${
                           index === 0 || (index === 1 && nights > 0) || (index === 2 && form.name && form.email)
-                            ? "border-green-200 bg-green-50 text-green-800"
-                            : "border-gray-100 bg-gray-50 text-gray-400"
+                            ? "border-teal-300/20 bg-teal-500/10 text-teal-50"
+                            : "border-white/8 bg-white/5 text-slate-300"
                         }`}
                       >
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs shadow-sm">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-xs text-white">
                           {index + 1}
                         </span>
                         {step}
@@ -224,45 +224,45 @@ export default function BookingPageClient() {
                   </div>
                 </div>
 
-                <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <section className="rounded-2xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Selected room</p>
-                      <h2 className="mt-2 text-xl font-bold text-gray-950">
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200">Selected room</p>
+                      <h2 className="mt-2 text-xl font-bold text-white">
                         {loadingRoom ? "Loading room details..." : room?.name ?? "Choose a room first"}
                       </h2>
-                      <p className="mt-2 text-sm leading-6 text-gray-500">
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
                         {room
                           ? "Breakfast, Wi-Fi, and standard house policies are included with this room."
                           : "A room selection is required before dates and payment can be confirmed."}
                       </p>
                     </div>
                     {room ? (
-                      <div className="rounded-xl bg-green-50 px-4 py-3 text-right">
-                        <p className="text-xs text-green-700">From</p>
-                        <p className="text-xl font-extrabold text-green-800">₹{room.price.toLocaleString("en-IN")}</p>
-                        <p className="text-xs text-green-700">per night</p>
+                      <div className="rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-right backdrop-blur-md">
+                        <p className="text-xs text-teal-100">From</p>
+                        <p className="text-xl font-extrabold text-white">₹{room.price.toLocaleString("en-IN")}</p>
+                        <p className="text-xs text-teal-100">per night</p>
                       </div>
                     ) : null}
                   </div>
 
                   {!roomId ? (
-                    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    <div className="mt-5 rounded-xl border border-teal-300/20 bg-teal-500/10 px-4 py-3 text-sm text-teal-50">
                       Please choose a room before completing a booking.
                     </div>
                   ) : null}
                   {selectedRoomError ? (
-                    <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div className="mt-5 rounded-xl border border-rose-300/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-50">
                       {selectedRoomError}
                     </div>
                   ) : null}
                 </section>
 
-                <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Dates and guests</p>
+                <section className="rounded-2xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200">Dates and guests</p>
                   <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
                     <label className="block">
-                      <span className="text-xs font-semibold text-gray-500">Check-in</span>
+                      <span className="text-xs font-semibold text-slate-300">Check-in</span>
                       <input
                         name="checkIn"
                         type="date"
@@ -275,7 +275,7 @@ export default function BookingPageClient() {
                     </label>
 
                     <label className="block">
-                      <span className="text-xs font-semibold text-gray-500">Check-out</span>
+                      <span className="text-xs font-semibold text-slate-300">Check-out</span>
                       <input
                         name="checkOut"
                         type="date"
@@ -288,7 +288,7 @@ export default function BookingPageClient() {
                     </label>
 
                     <label className="block">
-                      <span className="text-xs font-semibold text-gray-500">Guests</span>
+                      <span className="text-xs font-semibold text-slate-300">Guests</span>
                       <select
                         name="guests"
                         value={form.guests}
@@ -308,11 +308,11 @@ export default function BookingPageClient() {
                   ) : null}
                 </section>
 
-                <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Guest details</p>
+                <section className="rounded-2xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200">Guest details</p>
                   <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <label className="block">
-                      <span className="text-xs font-semibold text-gray-500">Full name</span>
+                      <span className="text-xs font-semibold text-slate-300">Full name</span>
                       <input
                         name="name"
                         type="text"
@@ -325,7 +325,7 @@ export default function BookingPageClient() {
                     </label>
 
                     <label className="block">
-                      <span className="text-xs font-semibold text-gray-500">Email</span>
+                      <span className="text-xs font-semibold text-slate-300">Email</span>
                       <input
                         name="email"
                         type="email"
@@ -339,16 +339,16 @@ export default function BookingPageClient() {
                   </div>
                 </section>
 
-                <section id="payment" className="scroll-mt-28 rounded-2xl border border-green-100 bg-white p-6 shadow-sm">
+                <section id="payment" className="scroll-mt-28 rounded-2xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Payment</p>
-                      <h2 className="mt-2 text-xl font-bold text-gray-950">Secure checkout</h2>
-                      <p className="mt-2 text-sm leading-6 text-gray-500">
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200">Payment</p>
+                      <h2 className="mt-2 text-xl font-bold text-white">Secure checkout</h2>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
                         Review your total and open the payment gateway to complete your booking.
                       </p>
                     </div>
-                    <span className="inline-flex w-fit rounded-full border border-green-100 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                    <span className="inline-flex w-fit rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold text-teal-100">
                       Razorpay
                     </span>
                   </div>
@@ -368,7 +368,7 @@ export default function BookingPageClient() {
                         onError={(message) => setError(message)}
                       />
                     ) : (
-                      <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5 text-sm text-gray-500">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-slate-300">
                         Select a room before payment.
                       </div>
                     )}
@@ -376,58 +376,58 @@ export default function BookingPageClient() {
                 </section>
 
                 {error ? (
-                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+                  <div className="rounded-xl border border-rose-300/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-50">{error}</div>
                 ) : null}
                 {success ? (
-                  <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{success}</div>
+                  <div className="rounded-xl border border-teal-300/20 bg-teal-500/10 px-4 py-3 text-sm text-teal-50">{success}</div>
                 ) : null}
 
                 <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                   <button
                     type="button"
                     onClick={() => router.push("/rooms")}
-                    className="min-h-12 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-green-700 hover:text-green-700"
+                    className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-slate-100 backdrop-blur-md transition hover:border-teal-300/30 hover:bg-white/12"
                   >
                     Back to Rooms
                   </button>
                   <button
                     type="submit"
                     disabled={!roomId || loadingRoom || !readyForPayment}
-                    className="min-h-12 rounded-xl bg-gradient-to-r from-green-700 to-green-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-green-900/20 transition hover:from-green-600 hover:to-green-500 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-400"
+                    className="min-h-12 rounded-xl border border-white/10 bg-gradient-to-r from-teal-500/90 via-teal-500/90 to-slate-500/90 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.22)] transition hover:from-teal-400 hover:via-teal-400 hover:to-slate-400 disabled:cursor-not-allowed disabled:from-slate-500 disabled:via-slate-500 disabled:to-slate-500"
                   >
                     Continue to Payment
                   </button>
                 </div>
               </form>
 
-              <aside className="rounded-2xl border border-green-100 bg-white p-6 shadow-lg shadow-green-900/5 lg:sticky lg:top-28">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-green-700">Booking summary</p>
-                <h2 className="mt-3 text-2xl font-bold text-gray-950">{room?.name ?? "No room selected"}</h2>
+              <aside className="rounded-2xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.18)] backdrop-blur-md lg:sticky lg:top-28">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-200">Booking summary</p>
+                <h2 className="mt-3 text-2xl font-bold text-white">{room?.name ?? "No room selected"}</h2>
                 <dl className="mt-5 space-y-3 text-sm">
                   <div className="flex justify-between gap-4">
-                    <dt className="text-gray-500">Dates</dt>
-                    <dd className="text-right font-medium text-gray-900">
+                    <dt className="text-slate-300">Dates</dt>
+                    <dd className="text-right font-medium text-white">
                       {form.checkIn && form.checkOut ? `${form.checkIn} to ${form.checkOut}` : "Select dates"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-gray-500">Guests</dt>
-                    <dd className="font-medium text-gray-900">{form.guests}</dd>
+                    <dt className="text-slate-300">Guests</dt>
+                    <dd className="font-medium text-white">{form.guests}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-gray-500">Nights</dt>
-                    <dd className="font-medium text-gray-900">{nights || "-"}</dd>
+                    <dt className="text-slate-300">Nights</dt>
+                    <dd className="font-medium text-white">{nights || "-"}</dd>
                   </div>
-                  <div className="border-t border-gray-100 pt-4">
+                  <div className="border-t border-white/10 pt-4">
                     <div className="flex justify-between gap-4">
-                      <dt className="text-gray-500">Estimated total</dt>
-                      <dd className="text-xl font-extrabold text-green-800">
+                      <dt className="text-slate-300">Estimated total</dt>
+                      <dd className="text-xl font-extrabold text-teal-100">
                         {estimatedTotal ? `₹${estimatedTotal.toLocaleString("en-IN")}` : "-"}
                       </dd>
                     </div>
                   </div>
                 </dl>
-                <div className="mt-5 rounded-xl bg-green-50 p-4 text-xs leading-6 text-green-800">
+                <div className="mt-5 rounded-xl border border-white/10 bg-white/8 p-4 text-xs leading-6 text-slate-300">
                   Includes breakfast and Wi-Fi. Final payment status is confirmed after the booking request is accepted.
                 </div>
               </aside>

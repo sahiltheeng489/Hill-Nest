@@ -126,20 +126,20 @@ export default function ChatBot() {
       {open && (
         <div
           id="chatbot-window"
-          className="fixed inset-x-3 bottom-24 z-[80] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-gray-100 shadow-2xl shadow-gray-900/30 pointer-events-auto animate-in sm:inset-x-auto sm:right-6 sm:bottom-28 sm:w-[340px] sm:max-h-[520px]"
+          className="fixed inset-x-3 bottom-24 z-[80] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(4,21,26,0.94),rgba(9,40,40,0.82))] shadow-[0_24px_80px_rgba(2,6,23,0.38)] pointer-events-auto animate-in backdrop-blur-2xl sm:inset-x-auto sm:right-6 sm:bottom-28 sm:w-[340px] sm:max-h-[520px]"
           style={{ animation: "slideUp 0.25s ease-out" }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-green-800 to-emerald-700 px-4 py-3 flex items-center gap-3">
+          <div className="bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-4 py-3 flex items-center gap-3">
             <div className="relative">
-              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg">
+              <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-lg">
                 🌿
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-green-800" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#6F9487] rounded-full border-2 border-[#163E3C]" />
             </div>
             <div className="flex-1">
               <p className="text-white font-semibold text-sm leading-none">HillNest Assistant</p>
-              <p className="text-green-200 text-xs mt-0.5">Online · usually replies instantly</p>
+              <p className="text-white/70 text-xs mt-0.5">Online · usually replies instantly</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -151,22 +151,22 @@ export default function ChatBot() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-4 space-y-3 min-h-0 max-h-[320px]">
+          <div className="flex-1 overflow-y-auto bg-transparent px-4 py-4 space-y-3 min-h-0 max-h-[320px]">
             {messages.map((msg, i) => (
               <div
                 key={i}
                 className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.from === "bot" && (
-                  <div className="w-6 h-6 rounded-full bg-green-700 text-white text-xs flex items-center justify-center mr-2 mt-1 shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-[#325F57] text-white text-xs flex items-center justify-center mr-2 mt-1 shrink-0">
                     🌿
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
                     msg.from === "user"
-                      ? "bg-green-700 text-white rounded-br-none"
-                      : "bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-none"
+                      ? "bg-gradient-to-r from-[#163E3C] to-[#325F57] text-white rounded-br-none"
+                      : "rounded-bl-none border border-white/10 bg-white/8 text-white/85 backdrop-blur-md"
                   }`}
                 >
                   {msg.text}
@@ -177,13 +177,13 @@ export default function ChatBot() {
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="w-6 h-6 rounded-full bg-green-700 text-white text-xs flex items-center justify-center mr-2 mt-1 shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[#325F57] text-white text-xs flex items-center justify-center mr-2 mt-1 shrink-0">
                   🌿
                 </div>
-                <div className="bg-white border border-gray-100 shadow-sm px-4 py-3 rounded-2xl rounded-bl-none flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-none border border-white/10 bg-white/8 px-4 py-3 shadow-sm backdrop-blur-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </div>
             )}
@@ -191,12 +191,12 @@ export default function ChatBot() {
           </div>
 
           {/* Quick replies */}
-          <div className="bg-gray-50 px-4 pb-2 flex gap-2 flex-wrap border-t border-gray-100">
+          <div className="flex flex-wrap gap-2 border-t border-white/10 bg-white/5 px-4 pb-2">
             {QUICK_REPLIES.map((qr) => (
               <button
                 key={qr}
                 onClick={() => sendMessage(qr)}
-                className="mt-2 text-xs px-3 py-1.5 rounded-full border border-green-200 bg-green-50 text-green-800 hover:bg-green-100 transition-colors font-medium"
+                className="mt-2 rounded-full border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-medium text-white/75 transition-colors hover:bg-white/12"
               >
                 {qr}
               </button>
@@ -204,24 +204,21 @@ export default function ChatBot() {
           </div>
 
           {/* Input */}
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white border-t border-gray-100 px-3 py-3 flex items-center gap-2"
-          >
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-white/10 bg-white/6 px-3 py-3">
             <input
               id="chatbot-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask me anything…"
-              className="flex-1 text-sm px-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 bg-gray-50 placeholder:text-gray-400"
+              className="flex-1 rounded-xl border border-white/10 bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#6F9487]/50 focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md"
             />
             <button
               type="submit"
               id="chatbot-send-btn"
               disabled={!input.trim()}
               aria-label="Send message"
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-green-700 text-white hover:bg-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#163E3C] to-[#6F9487] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -236,7 +233,7 @@ export default function ChatBot() {
         id="chatbot-toggle-btn"
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close chat" : "Open chat"}
-        className="fixed bottom-6 right-6 z-[80] w-14 h-14 rounded-full bg-gradient-to-br from-green-800 to-emerald-600 shadow-lg shadow-green-900/40 hover:shadow-green-900/60 hover:scale-110 active:scale-95 touch-manipulation transition-all duration-300 flex items-center justify-center text-white"
+        className="fixed bottom-6 right-6 z-[80] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#163E3C] via-[#325F57] to-[#6F9487] text-white transition-all duration-300 touch-manipulation hover:scale-110 active:scale-95"
       >
         {open ? (
           <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">

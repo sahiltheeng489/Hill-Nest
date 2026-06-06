@@ -56,9 +56,9 @@ const nightsBetween = (from: string, to: string): number => {
 };
 
 const getStatusClasses = (status: Booking["status"]) => {
-  if (status === "confirmed") return "bg-blue-50 text-blue-700 border-blue-100";
-  if (status === "cancelled") return "bg-red-50 text-red-700 border-red-100";
-  return "bg-amber-50 text-amber-700 border-amber-100";
+  if (status === "confirmed") return "bg-[#163E3C]/35 text-white border-white/10";
+  if (status === "cancelled") return "bg-red-500/10 text-red-100 border-red-300/20";
+  return "bg-white/8 text-white/75 border-white/10";
 };
 
 // ── Main page content ─────────────────────────────────────────────────────────
@@ -213,7 +213,7 @@ function BookingsPageContent() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-green-50/30 to-white pt-24">
+      <main className="min-h-screen bg-[linear-gradient(180deg,#04151A,#092828_52%,#04151A)] pt-24 text-white">
         <Container>
           <section className="py-14">
 
@@ -224,7 +224,7 @@ function BookingsPageContent() {
                 <button
                   type="button"
                   onClick={() => router.push("/rooms")}
-                  className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-green-700 transition-colors"
+                  className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="15 18 9 12 15 6" />
@@ -232,22 +232,22 @@ function BookingsPageContent() {
                   Back to Rooms
                 </button>
 
-                <h1 className="text-3xl font-bold text-gray-900">Complete Your Booking</h1>
-                <p className="text-sm text-gray-500 mt-2">
+                <h1 className="text-3xl font-bold text-white">Complete Your Booking</h1>
+                <p className="mt-2 text-sm text-white/55">
                   {room ? `You are booking: ${room.name}` : "Loading room details…"}
                 </p>
 
                 {/* Room pill */}
                 {room && (
-                  <div className="mt-3 inline-flex items-center gap-3 rounded-2xl border border-green-100 bg-green-50 px-4 py-2.5">
-                    <span className="text-green-700 font-semibold text-sm">{room.name}</span>
-                    <span className="text-green-600 text-sm">₹{typeof room.price === "number" ? room.price.toLocaleString("en-IN") : "N/A"} / night</span>
+                  <div className="mt-3 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-2.5 backdrop-blur-md">
+                    <span className="text-sm font-semibold text-white">{room.name}</span>
+                    <span className="text-sm text-white/65">₹{typeof room.price === "number" ? room.price.toLocaleString("en-IN") : "N/A"} / night</span>
                   </div>
                 )}
 
                 {/* Form error */}
                 {formError && (
-                  <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm text-red-100 backdrop-blur-md">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
@@ -256,62 +256,62 @@ function BookingsPageContent() {
                 )}
 
                 {/* Booking form */}
-                <div className="mt-6 bg-white border border-gray-100 rounded-3xl p-6 shadow-sm max-w-2xl space-y-4">
+                <div className="mt-6 max-w-2xl space-y-4 rounded-3xl border border-white/10 bg-white/8 p-6 shadow-[0_18px_50px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
+                      <label className="text-xs font-medium uppercase tracking-wide text-white/45">Full Name</label>
                       <input
                         name="name"
                         type="text"
                         placeholder="Your full name"
                         value={form.name}
                         onChange={onChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+                        className="w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:border-[#6F9487]/50 focus:outline-none focus:ring-2 focus:ring-teal-200/15 transition backdrop-blur-md"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</label>
+                      <label className="text-xs font-medium uppercase tracking-wide text-white/45">Email</label>
                       <input
                         name="email"
                         type="email"
                         placeholder="your@email.com"
                         value={form.email}
                         onChange={onChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+                        className="w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:border-[#6F9487]/50 focus:outline-none focus:ring-2 focus:ring-teal-200/15 transition backdrop-blur-md"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-in</label>
+                      <label className="text-xs font-medium uppercase tracking-wide text-white/45">Check-in</label>
                       <input
                         name="checkIn"
                         type="date"
                         value={form.checkIn}
                         onChange={onChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+                        className="w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white focus:border-[#6F9487]/50 focus:outline-none focus:ring-2 focus:ring-teal-200/15 transition backdrop-blur-md"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Check-out</label>
+                      <label className="text-xs font-medium uppercase tracking-wide text-white/45">Check-out</label>
                       <input
                         name="checkOut"
                         type="date"
                         value={form.checkOut}
                         onChange={onChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+                        className="w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white focus:border-[#6F9487]/50 focus:outline-none focus:ring-2 focus:ring-teal-200/15 transition backdrop-blur-md"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Guests</label>
+                    <label className="text-xs font-medium uppercase tracking-wide text-white/45">Guests</label>
                     <select
                       name="guests"
                       value={form.guests}
                       onChange={onChange}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 transition"
+                      className="w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white focus:border-[#6F9487]/50 focus:outline-none focus:ring-2 focus:ring-teal-200/15 transition backdrop-blur-md"
                     >
                       {[1, 2, 3, 4, 5, 6].map((n) => (
                         <option key={n} value={n}>
@@ -334,37 +334,37 @@ function BookingsPageContent() {
                       onError={(msg) => setFormError(msg)}
                     />
                   ) : (
-                    <div className="h-[140px] animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-[140px] animate-pulse rounded-2xl bg-white/10" />
                   )}
 
                   {nights > 0 && room && (
-                    <p className="text-xs text-center text-gray-400">
+                    <p className="text-center text-xs text-white/45">
                       {nights} night{nights !== 1 ? "s" : ""} · {formatDate(form.checkIn)} → {formatDate(form.checkOut)}
                     </p>
                   )}
                 </div>
 
-                <hr className="mt-14 border-gray-100" />
+                <hr className="mt-14 border-white/10" />
               </div>
             )}
 
             {/* ── Page heading ───────────────────────────────────────────── */}
             {!roomId ? (
               <>
-                <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
-                <p className="text-sm text-gray-500 mt-2">All bookings created from your account.</p>
+                <h1 className="text-3xl font-bold text-white">My Bookings</h1>
+                <p className="mt-2 text-sm text-white/55">All bookings created from your account.</p>
               </>
             ) : (
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">My Bookings</h2>
+              <h2 className="mb-2 text-2xl font-bold text-white">My Bookings</h2>
             )}
 
             {/* ── States ────────────────────────────────────────────────── */}
-            {loading && <p className="mt-8 text-gray-500">Loading bookings…</p>}
-            {error && <p className="mt-8 text-red-600">{error}</p>}
-            {actionError && <p className="mt-3 text-sm text-red-600">{actionError}</p>}
+            {loading && <p className="mt-8 text-white/55">Loading bookings…</p>}
+            {error && <p className="mt-8 text-red-100">{error}</p>}
+            {actionError && <p className="mt-3 text-sm text-red-100">{actionError}</p>}
 
             {!loading && !error && bookings.length === 0 && (
-              <p className="mt-8 text-gray-500">No bookings yet.</p>
+              <p className="mt-8 text-white/55">No bookings yet.</p>
             )}
 
             {/* ── Bookings list ──────────────────────────────────────────── */}
@@ -372,13 +372,13 @@ function BookingsPageContent() {
               <>
                 {/* Stats */}
                 <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                  <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold text-white">
                     Total: {totalBookings}
                   </span>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold text-white">
                     Active: {activeBookings}
                   </span>
-                  <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                  <span className="rounded-full border border-red-300/20 bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-100">
                     Cancelled: {cancelledBookings}
                   </span>
                 </div>
@@ -393,12 +393,12 @@ function BookingsPageContent() {
                     <button
                       key={filter.id}
                       type="button"
-                      onClick={() => setViewFilter(filter.id as "all" | "active" | "cancelled")}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                        viewFilter === filter.id
-                          ? "border-green-700 bg-green-700 text-white"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-green-500 hover:text-green-700"
-                      }`}
+                        onClick={() => setViewFilter(filter.id as "all" | "active" | "cancelled")}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                          viewFilter === filter.id
+                          ? "border-[#6F9487]/50 bg-gradient-to-r from-[#163E3C] to-[#6F9487] text-white"
+                          : "border-white/10 bg-white/8 text-white/65 hover:border-white/20 hover:text-white"
+                        }`}
                     >
                       {filter.label}
                     </button>
@@ -413,10 +413,10 @@ function BookingsPageContent() {
                     return (
                       <article
                         key={booking._id}
-                        className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
+                        className="rounded-2xl border border-white/10 bg-white/8 p-5 shadow-[0_12px_28px_rgba(2,6,23,0.14)] backdrop-blur-2xl transition-shadow hover:shadow-[0_16px_36px_rgba(2,6,23,0.2)]"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <h2 className="text-lg font-semibold text-gray-900">
+                          <h2 className="text-lg font-semibold text-white">
                             {booking.room?.name || "Room unavailable"}
                           </h2>
                           <span
@@ -426,16 +426,16 @@ function BookingsPageContent() {
                           </span>
                         </div>
 
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="mt-1 text-sm text-white/55">
                           {booking.name} · {booking.email}
                         </p>
 
-                        <div className="mt-4 text-sm text-gray-700 space-y-1">
+                        <div className="mt-4 space-y-1 text-sm text-white/75">
                           <p>Check-in: <span className="font-medium">{formatDate(booking.checkIn)}</span></p>
                           <p>Check-out: <span className="font-medium">{formatDate(booking.checkOut)}</span></p>
                           <p>Guests: {booking.guests} · {bookingNights} night{bookingNights !== 1 ? "s" : ""}</p>
                           {booking.room && (
-                            <p className="font-semibold text-green-700">
+                            <p className="font-semibold text-[#6F9487]">
                               Total: {typeof booking.room.price === "number" ? `₹${(booking.room.price * bookingNights).toLocaleString("en-IN")}` : "N/A"}
                             </p>
                           )}
@@ -443,7 +443,7 @@ function BookingsPageContent() {
 
                         {/* Payment badge */}
                         {booking.payment?.status === "paid" && (
-                          <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                          <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/8 px-2.5 py-1 text-xs font-semibold text-white/80 backdrop-blur-md">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
@@ -451,7 +451,7 @@ function BookingsPageContent() {
                           </div>
                         )}
 
-                        <p className="mt-3 text-xs text-gray-400">
+                        <p className="mt-3 text-xs text-white/40">
                           Booked on {formatDate(booking.createdAt)}
                         </p>
 
@@ -460,7 +460,7 @@ function BookingsPageContent() {
                             type="button"
                             onClick={() => cancelBooking(booking._id)}
                             disabled={cancellingId === booking._id}
-                            className="mt-4 rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="mt-4 rounded-lg border border-red-300/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {cancellingId === booking._id ? "Cancelling…" : "Cancel Booking"}
                           </button>
@@ -471,7 +471,7 @@ function BookingsPageContent() {
                 </div>
 
                 {visibleBookings.length === 0 && (
-                  <p className="mt-6 text-sm text-gray-500">No bookings found for this filter.</p>
+                  <p className="mt-6 text-sm text-white/55">No bookings found for this filter.</p>
                 )}
               </>
             )}
@@ -485,7 +485,7 @@ function BookingsPageContent() {
 
 export default function BookingsPage() {
   return (
-    <Suspense fallback={<main className="min-h-screen bg-gradient-to-b from-green-50/30 to-white pt-24" />}>
+    <Suspense fallback={<main className="min-h-screen bg-[linear-gradient(180deg,#04151A,#092828)] pt-24" />}>
       <BookingsPageContent />
     </Suspense>
   );

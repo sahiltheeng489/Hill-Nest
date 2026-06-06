@@ -63,7 +63,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
           <button
             type="button"
             onClick={goToPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm text-gray-700 hover:bg-gray-50"
+            className="absolute left-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
             aria-label="Previous room"
           >
             {"<"}
@@ -71,7 +71,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
           <button
             type="button"
             onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm text-gray-700 hover:bg-gray-50"
+            className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
             aria-label="Next room"
           >
             {">"}
@@ -84,7 +84,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
                 type="button"
                 onClick={() => setActiveIndex(index)}
                 className={`h-2.5 rounded-full transition-all ${
-                  safeIndex === index ? "w-8 bg-green-700" : "w-2.5 bg-green-200"
+                  safeIndex === index ? "w-8 bg-[#6F9487]" : "w-2.5 bg-white/25"
                 }`}
                 aria-label={`Go to room ${index + 1}`}
               />

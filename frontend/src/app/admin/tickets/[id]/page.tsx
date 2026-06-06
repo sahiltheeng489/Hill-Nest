@@ -27,24 +27,24 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
   };
 
   if (loading) return <div className="space-y-4"><div className="h-32 skeleton rounded-xl" /><div className="h-64 skeleton rounded-xl" /></div>;
-  if (!ticket) return <div className="text-center py-16 text-gray-400">Ticket not found</div>;
+  if (!ticket) return <div className="text-center py-16 text-white/45">Ticket not found</div>;
 
   const STATUS_ACTIONS = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].filter(s => s !== ticket.status);
 
   return (
-    <div className="max-w-4xl space-y-5">
-      <div className="flex items-center gap-2 text-sm text-gray-400">
-        <Link href="/admin/tickets" className="hover:text-indigo-600">Tickets</Link>
+    <div className="max-w-4xl space-y-5 text-white">
+      <div className="flex items-center gap-2 text-sm text-white/45">
+        <Link href="/admin/tickets" className="hover:text-white">Tickets</Link>
         <span>/</span>
-        <span className="text-gray-700 truncate max-w-xs">{ticket.subject}</span>
+        <span className="max-w-xs truncate text-white/75">{ticket.subject}</span>
       </div>
 
       {/* Header */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="rounded-xl border border-white/10 bg-white/8 p-6 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{ticket.subject}</h1>
-            <p className="text-gray-500 text-sm mt-1">From: {ticket.customer?.name} ({ticket.customer?.email})</p>
+            <h1 className="text-xl font-bold text-white">{ticket.subject}</h1>
+            <p className="mt-1 text-sm text-white/55">From: {ticket.customer?.name} ({ticket.customer?.email})</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <StatusBadge value={ticket.priority} />
@@ -52,12 +52,12 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
           </div>
         </div>
 
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-700 whitespace-pre-wrap">{ticket.description}</div>
+        <div className="mt-4 rounded-lg border border-white/8 bg-white/8 p-4 text-sm text-white/80 whitespace-pre-wrap backdrop-blur-md">{ticket.description}</div>
 
         {/* Status actions */}
-        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-4 flex gap-2 border-t border-white/10 pt-4">
           {STATUS_ACTIONS.map(s => (
-            <button key={s} onClick={() => handleStatusChange(s)} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors capitalize">
+            <button key={s} onClick={() => handleStatusChange(s)} className="rounded-lg border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-medium capitalize text-white/70 transition-colors hover:bg-white/12">
               Mark {s.toLowerCase().replace('_', ' ')}
             </button>
           ))}
@@ -65,33 +65,33 @@ export default function TicketDetailPage({ params }: { params: { id: string } })
       </div>
 
       {/* Notes */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Notes ({ticket.notes?.length ?? 0})</h2>
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-white/8 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+        <div className="border-b border-white/10 px-5 py-4">
+          <h2 className="font-semibold text-white">Notes ({ticket.notes?.length ?? 0})</h2>
         </div>
         <div className="p-5 space-y-4 max-h-[500px] overflow-y-auto">
           {ticket.notes?.length ? ticket.notes.map((note: any) => (
-            <div key={note.id} className={`rounded-xl p-4 ${note.isInternal ? 'bg-amber-50 border border-amber-200' : 'bg-blue-50 border border-blue-200'}`}>
+            <div key={note.id} className={`rounded-xl border p-4 ${note.isInternal ? 'border-amber-300/20 bg-amber-500/10' : 'border-white/8 bg-white/8'}`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-gray-500">
+                <span className="text-xs font-semibold text-white/55">
                   {note.isInternal ? '🔒 Internal Note' : '📨 Customer Reply'}
                 </span>
-                <span className="text-xs text-gray-400">{new Date(note.createdAt).toLocaleString('en-IN')}</span>
+                <span className="text-xs text-white/40">{new Date(note.createdAt).toLocaleString('en-IN')}</span>
               </div>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{note.content}</p>
+              <p className="text-sm text-white/80 whitespace-pre-wrap">{note.content}</p>
             </div>
-          )) : <p className="text-center text-gray-400 text-sm py-8">No notes yet</p>}
+          )) : <p className="py-8 text-center text-sm text-white/45">No notes yet</p>}
         </div>
 
         {/* Add note */}
-        <div className="p-5 border-t border-gray-100 space-y-3">
-          <textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="Add a note…" rows={3} className="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 resize-none" />
+        <div className="space-y-3 border-t border-white/10 p-5">
+          <textarea value={noteContent} onChange={e => setNoteContent(e.target.value)} placeholder="Add a note…" rows={3} className="w-full resize-none rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal-200/15 focus:border-[#6F9487]/50 backdrop-blur-md" />
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-              <input type="checkbox" checked={isInternal} onChange={e => setIsInternal(e.target.checked)} className="rounded" />
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-white/65">
+              <input type="checkbox" checked={isInternal} onChange={e => setIsInternal(e.target.checked)} className="rounded border-white/10 bg-white/8" />
               Internal note (not visible to customer)
             </label>
-            <button onClick={handleAddNote} disabled={!noteContent.trim() || submittingNote} className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+            <button onClick={handleAddNote} disabled={!noteContent.trim() || submittingNote} className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
               {submittingNote && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
               Add Note
             </button>

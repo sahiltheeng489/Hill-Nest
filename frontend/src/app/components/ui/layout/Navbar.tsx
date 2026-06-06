@@ -19,14 +19,27 @@ export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; email: string; role?: "user" | "admin" } | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("home");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        setScrollY(y);
+        setScrolled(y > 20);
+        frame = 0;
+      });
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -80,8 +93,9 @@ export default function Navbar() {
     return () => observers.forEach(o => o.disconnect());
   }, [isHome]);
 
-  const getNavHref = (hashHref: string) => (isHome ? hashHref : `/${hashHref}`);
+  const getNavHref = (href: string) => (href.startsWith("#") ? (isHome ? href : `/${href}`) : href);
   const dashboardHref = user?.role === "admin" ? "/admin" : "/user";
+  const glassProgress = Math.min(scrollY / 140, 1);
 
   const handleLogout = () => {
     logoutUser();
@@ -95,20 +109,38 @@ export default function Navbar() {
   };
 
   const isTransparent = !scrolled && isHome && !menuOpen;
+  const navBackground = isTransparent
+    ? `rgba(3, 7, 18, ${0.26 + glassProgress * 0.06})`
+    : `rgba(8, 15, 29, ${0.42 + glassProgress * 0.08})`;
+  const navBorder = isTransparent
+    ? `rgba(255, 255, 255, ${0.16 + glassProgress * 0.06})`
+    : `rgba(255, 255, 255, ${0.34 + glassProgress * 0.06})`;
+  const navShadow = isTransparent
+    ? `0 ${10 + glassProgress * 12}px ${30 + glassProgress * 24}px rgba(2, 6, 23, ${0.1 + glassProgress * 0.16})`
+    : `0 ${10 + glassProgress * 12}px ${28 + glassProgress * 24}px rgba(15, 23, 42, ${0.08 + glassProgress * 0.1})`;
+  const navBlur = `blur(${14 + glassProgress * 8}px) saturate(${1.2 + glassProgress * 0.12})`;
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[90] transition-all duration-500 ${
-        isTransparent
-          ? "bg-green-950/70 backdrop-blur-sm"
-          : "bg-white/95 backdrop-blur-xl shadow-md border-b border-gray-100/80"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-[90] border-b border-t transition-all duration-500 ease-out ${isTransparent ? "text-white" : "text-slate-100"}`}
+      style={{
+        backgroundColor: navBackground,
+        borderBottomColor: navBorder,
+        borderTopColor: "rgba(255,255,255,0.03)",
+        backdropFilter: navBlur,
+        WebkitBackdropFilter: navBlur,
+        boxShadow: navShadow,
+      }}
     >
       <Container>
         <div className="flex min-h-[64px] items-center justify-between gap-2 py-2.5 sm:min-h-[72px] sm:gap-3 sm:py-4">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Link href="/" className="inline-flex min-w-0 items-center gap-2" onClick={closeMenu}>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-green-700 to-emerald-500 text-white shadow-sm">
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm backdrop-blur-md ${
+                isTransparent
+                  ? "border border-white/15 bg-white/10 text-white"
+                  : "border border-white/12 bg-white/8 text-teal-200"
+              }`}>
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 21c4-4 7-8 7-13a7 7 0 0 0-14 0c0 5 3 9 7 13Z" />
                   <path d="M12 21V8" />
@@ -116,11 +148,11 @@ export default function Navbar() {
                 </svg>
               </span>
               <div>
-                <h1 className={`text-lg font-bold tracking-tight sm:text-2xl ${isTransparent ? "text-white" : "text-gray-900"}`}>
-                  Hill<span className="text-green-700">Nest</span>
+                <h1 className={`text-lg font-bold tracking-tight sm:text-2xl ${isTransparent ? "text-white" : "text-slate-100"}`}>
+                  Hill<span className={isTransparent ? "text-teal-200" : "text-teal-300"}>Nest</span>
                 </h1>
                 <p className={`hidden text-[10px] font-medium uppercase tracking-[0.18em] min-[390px]:block sm:text-xs sm:tracking-[0.24em] ${
-                  isTransparent ? "text-white/70" : "text-gray-500"
+                  isTransparent ? "text-white/70" : "text-slate-300"
                 }`}>
                   Homestay booking
                 </p>
@@ -128,22 +160,27 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="hidden md:flex gap-7 font-medium text-sm">
+          <div className="hidden md:flex items-center gap-2.5 text-sm font-medium">
             {navLinks.map(({ label, href }) => {
-              const isActive = isHome && activeSection === href.replace("#", "");
+              const isActive = (href.startsWith("#") && isHome && activeSection === href.replace("#", "")) || pathname === href;
               return (
                 <Link
                   key={label}
                   href={getNavHref(href)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative group transition-colors duration-200 ${
+                  className={`group inline-flex items-center border-b px-1.5 py-2 transition-all duration-200 backdrop-blur-md ${
                     isTransparent
-                      ? isActive ? "text-white" : "text-white/80 hover:text-white"
-                      : isActive ? "text-green-700" : "text-gray-600 hover:text-green-700"
+                      ? isActive
+                        ? "border-teal-200/70 text-white"
+                        : "border-transparent text-white/72 hover:border-white/30 hover:text-white"
+                      : isActive
+                        ? "border-teal-400/70 text-slate-100"
+                        : "border-transparent text-slate-300 hover:border-teal-300/35 hover:text-slate-100"
                   }`}
                 >
-                  {label}
-                  <span className={`absolute -bottom-0.5 left-0 h-0.5 bg-green-500 rounded-full transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+                  <span className="relative">
+                    {label}
+                  </span>
                 </Link>
               );
             })}
@@ -154,42 +191,45 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href={dashboardHref}
-                  className={`inline-flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 border ${
+                  className={`animate-button-in inline-flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 border ${
                     isTransparent
-                      ? "glass border-white/30 text-white hover:bg-white/20"
-                      : "bg-white border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-700"
+                      ? "border-white/14 bg-white/8 text-white hover:bg-white/12 backdrop-blur-md"
+                      : "border-white/12 bg-white/8 text-slate-100 hover:bg-white/12 hover:border-white/20 backdrop-blur-md"
                   }`}
+                  style={{ animationDelay: "0.12s" }}
                 >
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-green-700 to-emerald-500 text-xs font-bold text-white">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 via-teal-500 to-slate-500 text-xs font-bold text-white">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                   <span className="hidden sm:inline">{user.name}</span>
                 </Link>
                 {!isHome && (
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm font-semibold text-gray-600 transition-all duration-200 hover:border-red-400 hover:text-red-600 hover:bg-red-50"
-                  >
-                    Logout
-                  </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-xl border border-white/12 bg-white/8 px-3.5 py-2 text-sm font-semibold text-inherit backdrop-blur-md transition-all duration-200 hover:border-rose-300/40 hover:bg-rose-500/10 hover:text-rose-100"
+                >
+                  Logout
+                </button>
                 )}
               </div>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className={`hidden sm:inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  className={`animate-button-in hidden sm:inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isTransparent
-                      ? "text-white/85 hover:text-white hover:bg-white/10"
-                      : "text-gray-600 hover:text-green-700 hover:bg-green-50"
+                      ? "text-white/85 hover:text-white hover:bg-white/10 backdrop-blur-md"
+                      : "border border-white/12 bg-white/8 text-slate-100 hover:bg-white/12 hover:border-white/20 backdrop-blur-md"
                   }`}
+                  style={{ animationDelay: "0.18s" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-800 to-emerald-600 text-white text-sm font-semibold shadow-md shadow-green-900/25 hover:from-green-700 hover:to-emerald-500 hover:shadow-green-900/35 hover:scale-105 active:scale-95 transition-all duration-300"
+                  className="animate-button-in hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/14 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-xl transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/18 active:scale-95"
+                  style={{ animationDelay: "0.24s" }}
                 >
                   Get Started
                 </Link>
@@ -200,11 +240,12 @@ export default function Navbar() {
               id="mobile-menu-btn"
               href="/menu"
               aria-label="Open menu"
-              className={`md:hidden relative z-[92] inline-flex h-14 w-14 shrink-0 cursor-pointer select-none items-center justify-center rounded-2xl border touch-manipulation transition-colors duration-200 ${
-                isTransparent
-                  ? "border-white/30 text-white hover:bg-white/10"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-green-300"
+              className={`animate-button-in md:hidden relative z-[92] inline-flex h-14 w-14 shrink-0 cursor-pointer select-none items-center justify-center rounded-2xl border touch-manipulation transition-colors duration-200 ${
+                  isTransparent
+                  ? "border-white/14 bg-white/8 text-white hover:bg-white/12 backdrop-blur-md"
+                  : "border-white/12 bg-white/8 text-slate-100 hover:bg-white/12 hover:border-white/20 backdrop-blur-md"
               }`}
+              style={{ animationDelay: "0.28s" }}
             >
               <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
                 <path d="M4 7h16" />
@@ -215,7 +256,6 @@ export default function Navbar() {
           </div>
         </div>
       </Container>
-
     </nav>
   );
 }

@@ -31,17 +31,17 @@ export default function Pagination({ pagination, onPageChange }: Props) {
   if (total === 0) return null;
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-white rounded-b-xl">
-      <p className="text-sm text-gray-500">
-        Showing <span className="font-medium text-gray-800">{from}</span> to{' '}
-        <span className="font-medium text-gray-800">{to}</span> of{' '}
-        <span className="font-medium text-gray-800">{total}</span> results
+    <div className="flex items-center justify-between rounded-b-xl border-t border-white/10 bg-white/8 px-4 py-3 backdrop-blur-md">
+      <p className="text-sm text-white/60">
+        Showing <span className="font-medium text-white">{from}</span> to{' '}
+        <span className="font-medium text-white">{to}</span> of{' '}
+        <span className="font-medium text-white">{total}</span> results
       </p>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={!hasPrev}
-          className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-1.5 text-sm rounded-lg border border-white/10 text-white/70 hover:bg-white/12 disabled:opacity-40 disabled:cursor-not-allowed transition-colors backdrop-blur-md"
         >
           ← Prev
         </button>
@@ -49,7 +49,7 @@ export default function Pagination({ pagination, onPageChange }: Props) {
           <button
             key={n}
             onClick={() => onPageChange(n)}
-            className={`w-9 h-9 text-sm rounded-lg font-medium transition-colors ${n === page ? 'bg-indigo-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+            className={`w-9 h-9 text-sm rounded-lg font-medium transition-colors ${n === page ? 'bg-gradient-to-r from-[#163E3C] to-[#6F9487] text-white' : 'border border-white/10 text-white/70 hover:bg-white/12 backdrop-blur-md'}`}
           >
             {n}
           </button>
@@ -57,7 +57,7 @@ export default function Pagination({ pagination, onPageChange }: Props) {
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={!hasNext}
-          className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-1.5 text-sm rounded-lg border border-white/10 text-white/70 hover:bg-white/12 disabled:opacity-40 disabled:cursor-not-allowed transition-colors backdrop-blur-md"
         >
           Next →
         </button>

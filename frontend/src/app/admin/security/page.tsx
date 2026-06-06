@@ -155,7 +155,7 @@ export default function SecurityPage() {
                     <td className="px-4 py-3 font-mono text-sm text-gray-700">{ip.ipAddress}</td>
                     <td className="px-4 py-3 text-gray-600">{ip.reason}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{new Date(ip.createdAt).toLocaleString('en-IN')}</td>
-                    <td className="px-4 py-3"><button onClick={() => handleUnblock(ip.id)} className="text-green-600 hover:text-green-800 text-xs font-medium">Unblock</button></td>
+                    <td className="px-4 py-3"><button onClick={() => handleUnblock(ip.id)} className="text-cyan-600 hover:text-cyan-800 text-xs font-medium">Unblock</button></td>
                   </tr>
                 ))}
                 {!blockedIps.length && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">No blocked IPs</td></tr>}

@@ -5,39 +5,39 @@ type BadgeVariant = 'booking' | 'payment' | 'refund' | 'ticket' | 'user';
 
 const colorMap: Record<string, string> = {
   // Booking statuses
-  PENDING: 'bg-amber-100 text-amber-700 ring-amber-200',
-  CONFIRMED: 'bg-green-100 text-green-700 ring-green-200',
-  COMPLETED: 'bg-blue-100 text-blue-700 ring-blue-200',
-  CANCELLED: 'bg-red-100 text-red-700 ring-red-200',
-  REFUNDED: 'bg-purple-100 text-purple-700 ring-purple-200',
+  PENDING: 'bg-white/8 text-[#E7E7E7] ring-white/10',
+  CONFIRMED: 'bg-[#163E3C]/55 text-white ring-white/10',
+  COMPLETED: 'bg-[#092828]/70 text-[#E7E7E7] ring-white/10',
+  CANCELLED: 'bg-red-500/15 text-red-100 ring-red-200/20',
+  REFUNDED: 'bg-[#325F57]/45 text-white ring-white/10',
   // Payment statuses
-  CREATED: 'bg-gray-100 text-gray-600 ring-gray-200',
-  PAID: 'bg-green-100 text-green-700 ring-green-200',
-  FAILED: 'bg-red-100 text-red-700 ring-red-200',
-  PARTIALLY_REFUNDED: 'bg-orange-100 text-orange-700 ring-orange-200',
+  CREATED: 'bg-white/8 text-white/70 ring-white/10',
+  PAID: 'bg-[#325F57]/45 text-white ring-white/10',
+  FAILED: 'bg-red-500/15 text-red-100 ring-red-200/20',
+  PARTIALLY_REFUNDED: 'bg-[#163E3C]/45 text-white ring-white/10',
   // Refund statuses
-  APPROVED: 'bg-green-100 text-green-700 ring-green-200',
-  REJECTED: 'bg-red-100 text-red-700 ring-red-200',
-  PROCESSED: 'bg-blue-100 text-blue-700 ring-blue-200',
+  APPROVED: 'bg-[#325F57]/45 text-white ring-white/10',
+  REJECTED: 'bg-red-500/15 text-red-100 ring-red-200/20',
+  PROCESSED: 'bg-[#092828]/70 text-[#E7E7E7] ring-white/10',
   // Ticket statuses
-  OPEN: 'bg-blue-100 text-blue-700 ring-blue-200',
-  IN_PROGRESS: 'bg-amber-100 text-amber-700 ring-amber-200',
-  RESOLVED: 'bg-green-100 text-green-700 ring-green-200',
-  CLOSED: 'bg-gray-100 text-gray-600 ring-gray-200',
+  OPEN: 'bg-white/8 text-white/75 ring-white/10',
+  IN_PROGRESS: 'bg-[#163E3C]/45 text-white ring-white/10',
+  RESOLVED: 'bg-[#325F57]/45 text-white ring-white/10',
+  CLOSED: 'bg-white/8 text-white/60 ring-white/10',
   // User statuses
-  ACTIVE: 'bg-green-100 text-green-700 ring-green-200',
-  SUSPENDED: 'bg-red-100 text-red-700 ring-red-200',
-  LOCKED: 'bg-orange-100 text-orange-700 ring-orange-200',
-  PENDING_VERIFICATION: 'bg-blue-100 text-blue-700 ring-blue-200',
+  ACTIVE: 'bg-[#163E3C]/45 text-white ring-white/10',
+  SUSPENDED: 'bg-red-500/15 text-red-100 ring-red-200/20',
+  LOCKED: 'bg-[#092828]/70 text-[#E7E7E7] ring-white/10',
+  PENDING_VERIFICATION: 'bg-white/8 text-white/75 ring-white/10',
   // Priority
-  LOW: 'bg-gray-100 text-gray-600 ring-gray-200',
-  MEDIUM: 'bg-amber-100 text-amber-700 ring-amber-200',
-  HIGH: 'bg-orange-100 text-orange-700 ring-orange-200',
-  URGENT: 'bg-red-100 text-red-700 ring-red-200',
+  LOW: 'bg-white/8 text-white/60 ring-white/10',
+  MEDIUM: 'bg-[#163E3C]/45 text-white ring-white/10',
+  HIGH: 'bg-[#325F57]/45 text-white ring-white/10',
+  URGENT: 'bg-red-500/15 text-red-100 ring-red-200/20',
   // CMS statuses
-  DRAFT: 'bg-gray-100 text-gray-600 ring-gray-200',
-  PUBLISHED: 'bg-green-100 text-green-700 ring-green-200',
-  ARCHIVED: 'bg-slate-100 text-slate-600 ring-slate-200',
+  DRAFT: 'bg-white/8 text-white/65 ring-white/10',
+  PUBLISHED: 'bg-[#325F57]/45 text-white ring-white/10',
+  ARCHIVED: 'bg-[#092828]/70 text-[#E7E7E7] ring-white/10',
 };
 
 interface Props {
@@ -46,7 +46,7 @@ interface Props {
 }
 
 export default function StatusBadge({ value }: Props) {
-  const colors = colorMap[value?.toUpperCase()] ?? 'bg-gray-100 text-gray-600 ring-gray-200';
+  const colors = colorMap[value?.toUpperCase()] ?? 'bg-white/8 text-white/65 ring-white/10';
   const label = value?.replace(/_/g, ' ');
 
   return (

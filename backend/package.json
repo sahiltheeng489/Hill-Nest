@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "node --test",
+    "security:test": "node scripts/run-security-tests.js",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },

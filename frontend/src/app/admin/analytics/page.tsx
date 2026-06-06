@@ -50,13 +50,13 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 text-white">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-xl font-bold text-gray-900">Analytics</h1><p className="text-gray-400 text-sm">Revenue, booking, and customer reports</p></div>
+        <div><h1 className="text-xl font-bold text-white">Analytics</h1><p className="text-sm text-white/45">Revenue, booking, and customer reports</p></div>
         <div className="flex gap-2">
-          <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600" />
-          <input type="date" value={to} onChange={e => setTo(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600" />
-          <button onClick={fetchData} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 font-medium">Apply</button>
+          <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white backdrop-blur-md" />
+          <input type="date" value={to} onChange={e => setTo(e.target.value)} className="rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white backdrop-blur-md" />
+          <button onClick={fetchData} className="rounded-lg bg-gradient-to-r from-[#163E3C] via-[#325F57] to-[#6F9487] px-4 py-2 text-sm font-medium text-white">Apply</button>
         </div>
       </div>
 
@@ -69,20 +69,20 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Revenue chart */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-gray-900 mb-4">Daily Revenue</h3>
+      <div className="rounded-xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+        <h3 className="mb-4 font-semibold text-white">Daily Revenue</h3>
         {loading ? <div className="h-32 skeleton" /> : <BarChart data={revenue?.byDay ?? []} label="Daily revenue for selected period" />}
       </div>
 
       {/* Bookings by status */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-gray-900 mb-4">Bookings by Status</h3>
+      <div className="rounded-xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+        <h3 className="mb-4 font-semibold text-white">Bookings by Status</h3>
         {loading ? <div className="h-20 skeleton" /> : (
           <div className="grid grid-cols-5 gap-3">
             {(bookings?.byStatus ?? []).map((s: any) => (
-              <div key={s.status} className="text-center bg-gray-50 rounded-xl p-4">
-                <p className="text-2xl font-bold text-gray-900">{s.count}</p>
-                <p className="text-xs text-gray-400 mt-1 capitalize">{s.status.toLowerCase().replace('_', ' ')}</p>
+              <div key={s.status} className="rounded-xl border border-white/8 bg-white/8 p-4 text-center backdrop-blur-md">
+                <p className="text-2xl font-bold text-white">{s.count}</p>
+                <p className="mt-1 text-xs capitalize text-white/40">{s.status.toLowerCase().replace('_', ' ')}</p>
               </div>
             ))}
           </div>
@@ -90,15 +90,15 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Export */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-gray-900 mb-4">Export Reports</h3>
+      <div className="rounded-xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+        <h3 className="mb-4 font-semibold text-white">Export Reports</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {['revenue', 'bookings', 'customers', 'refunds'].map(type => (
-            <div key={type} className="border border-gray-100 rounded-xl p-4">
-              <p className="font-medium text-gray-700 capitalize mb-3">{type}</p>
+            <div key={type} className="rounded-xl border border-white/8 bg-white/8 p-4 backdrop-blur-md">
+              <p className="mb-3 font-medium capitalize text-white/75">{type}</p>
               <div className="flex gap-2">
                 {['csv', 'pdf'].map(format => (
-                  <button key={format} onClick={() => handleExport(type, format)} disabled={exporting === `${type}-${format}`} className="flex-1 py-1.5 text-xs font-medium bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 text-gray-600 rounded-lg transition-colors uppercase disabled:opacity-50">
+                  <button key={format} onClick={() => handleExport(type, format)} disabled={exporting === `${type}-${format}`} className="flex-1 rounded-lg border border-white/10 bg-white/8 py-1.5 text-xs font-medium uppercase text-white/70 transition-colors hover:bg-white/12 disabled:opacity-50">
                     {exporting === `${type}-${format}` ? '…' : format}
                   </button>
                 ))}

@@ -57,7 +57,7 @@ export default function RefundsPage() {
     { key: 'createdAt', label: 'Requested', render: (r: Refund) => new Date(r.createdAt).toLocaleDateString('en-IN') },
     { key: 'actions', label: '', render: (r: Refund) => r.status === 'PENDING' ? (
       <div className="flex gap-2">
-        <button onClick={e => { e.stopPropagation(); setApproveTarget(r); setAdminNotes(''); }} className="text-green-600 hover:text-green-800 text-xs font-medium">Approve</button>
+        <button onClick={e => { e.stopPropagation(); setApproveTarget(r); setAdminNotes(''); }} className="text-cyan-600 hover:text-cyan-800 text-xs font-medium">Approve</button>
         <button onClick={e => { e.stopPropagation(); setRejectTarget(r); setAdminNotes(''); }} className="text-red-500 hover:text-red-700 text-xs font-medium">Reject</button>
       </div>
     ) : null },

@@ -89,14 +89,14 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10">
+            <svg className="w-6 h-6 text-red-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
-          <p className="text-gray-600 font-medium">Failed to load dashboard</p>
-          <p className="text-gray-400 text-sm mt-1">{error}</p>
-          <button onClick={() => window.location.reload()} className="mt-3 text-indigo-600 text-sm font-medium hover:underline">Retry</button>
+          <p className="font-medium text-white">Failed to load dashboard</p>
+          <p className="mt-1 text-sm text-white/45">{error}</p>
+          <button onClick={() => window.location.reload()} className="mt-3 text-sm font-medium text-[#6F9487] hover:underline">Retry</button>
         </div>
       </div>
     );
@@ -105,14 +105,14 @@ export default function AdminDashboard() {
   const ov = stats?.overview;
 
   return (
-    <div className="space-y-6 animate-fade-up">
+    <div className="animate-fade-up space-y-6 text-white">
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{today}</p>
+          <h1 className="text-2xl font-bold text-white">Welcome back, {firstName} 👋</h1>
+          <p className="mt-0.5 text-sm text-white/45">{today}</p>
         </div>
-        <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+        <button onClick={() => window.location.reload()} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/65 transition-colors hover:bg-white/12 backdrop-blur-md">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
           Refresh
         </button>
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-5 gap-4">
         {/* Revenue chart */}
-        <div className="col-span-3 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <div className="col-span-3 rounded-xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold text-gray-900">Revenue (Last 30 Days)</h3>
@@ -151,12 +151,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Bookings by status donut */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-          <h3 className="font-semibold text-gray-900 mb-4">Bookings by Status</h3>
+        <div className="col-span-2 rounded-xl border border-white/10 bg-white/8 p-5 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+          <h3 className="mb-4 font-semibold text-white">Bookings by Status</h3>
           {loading ? <div className="h-24 skeleton" /> : (
-            stats?.charts.bookingsByStatus?.length
+              stats?.charts.bookingsByStatus?.length
               ? <DonutChart data={stats.charts.bookingsByStatus} />
-              : <div className="text-center text-gray-300 text-sm py-8">No booking data</div>
+              : <div className="py-8 text-center text-sm text-white/35">No booking data</div>
           )}
         </div>
       </div>
@@ -164,47 +164,47 @@ export default function AdminDashboard() {
       {/* Bottom Row */}
       <div className="grid grid-cols-11 gap-4">
         {/* Recent Bookings */}
-        <div className="col-span-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Recent Bookings</h3>
-            <a href="/admin/bookings" className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">View all →</a>
+        <div className="col-span-6 overflow-hidden rounded-xl border border-white/10 bg-white/8 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <h3 className="font-semibold text-white">Recent Bookings</h3>
+            <a href="/admin/bookings" className="text-xs font-medium text-[#6F9487] transition-colors hover:text-white">View all →</a>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Customer</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Room</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Amount</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
+                <tr className="bg-white/6">
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-white/40">Customer</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-white/40">Room</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-white/40">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-white/40">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/8">
                 {loading ? Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}><td colSpan={4} className="px-4 py-3"><div className="h-4 skeleton" /></td></tr>
                 )) : (stats?.recentBookings ?? []).slice(0, 8).map(b => (
-                  <tr key={b.id} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => window.location.href = '/admin/bookings'}>
+                  <tr key={b.id} className="cursor-pointer transition-colors hover:bg-white/8" onClick={() => window.location.href = '/admin/bookings'}>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-800 truncate max-w-[120px]">{b.customer?.name ?? '—'}</p>
-                      <p className="text-xs text-gray-400 truncate max-w-[120px]">{b.customer?.email}</p>
+                      <p className="max-w-[120px] truncate font-medium text-white">{b.customer?.name ?? '—'}</p>
+                      <p className="max-w-[120px] truncate text-xs text-white/40">{b.customer?.email}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 truncate max-w-[100px]">{b.roomName}</td>
-                    <td className="px-4 py-3 text-gray-800 font-medium">₹{Number(b.totalAmount).toLocaleString('en-IN')}</td>
+                    <td className="max-w-[100px] truncate px-4 py-3 text-white/70">{b.roomName}</td>
+                    <td className="px-4 py-3 font-medium text-white">₹{Number(b.totalAmount).toLocaleString('en-IN')}</td>
                     <td className="px-4 py-3"><StatusBadge value={b.status} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
             {!loading && !stats?.recentBookings?.length && (
-              <div className="text-center py-8 text-gray-400 text-sm">No recent bookings</div>
+              <div className="py-8 text-center text-sm text-white/40">No recent bookings</div>
             )}
           </div>
         </div>
 
         {/* Recent Activity Feed */}
-        <div className="col-span-5 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">Recent Activity</h3>
+        <div className="col-span-5 overflow-hidden rounded-xl border border-white/10 bg-white/8 shadow-[0_14px_30px_rgba(2,6,23,0.16)] backdrop-blur-2xl">
+          <div className="border-b border-white/10 px-5 py-4">
+            <h3 className="font-semibold text-white">Recent Activity</h3>
           </div>
           <div className="p-4 space-y-3 overflow-y-auto max-h-80">
             {loading ? Array.from({ length: 6 }).map((_, i) => (
@@ -217,12 +217,12 @@ export default function AdminDashboard() {
               </div>
             )) : (stats?.recentActivity ?? []).map(a => (
               <div key={a.id} className="flex gap-3 items-start">
-                <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-bold flex-shrink-0">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#163E3C] to-[#6F9487] text-xs font-bold text-white">
                   {a.adminUser ? `${a.adminUser.firstName[0]}${a.adminUser.lastName[0]}` : '?'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-700 truncate">{a.description}</p>
-                  <p className="text-xs text-gray-400">{new Date(a.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</p>
+                  <p className="truncate text-xs text-white/75">{a.description}</p>
+                  <p className="text-xs text-white/40">{new Date(a.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</p>
                 </div>
               </div>
             ))}

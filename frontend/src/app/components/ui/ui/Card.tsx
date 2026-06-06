@@ -4,8 +4,8 @@ interface CardProps {
 
 export default function Card({ children }: CardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-md shadow-gray-200/80 hover:-translate-y-3 hover:shadow-xl hover:shadow-gray-200 transition-all duration-300 overflow-hidden group">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/8 shadow-[0_14px_30px_rgba(2,6,23,0.16)] transition-all duration-300 group hover:-translate-y-3 hover:bg-white/12 backdrop-blur-md">
       {children}
     </div>
   );
-}
+}

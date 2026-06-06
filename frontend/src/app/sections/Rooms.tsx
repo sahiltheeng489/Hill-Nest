@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Container from "@/app/components/ui/ui/Container";
-import SectionTitle from "@/app/components/ui/ui/SectionTitle";
 import RoomCard from "../components/ui/room/RoomCard";
 import { buildApiUrl } from "@/services/api";
 
@@ -69,6 +68,7 @@ const rooms = [
 ];
 
 export default function Rooms() {
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
   const [apiRooms, setApiRooms] = useState<ApiRoom[]>([]);
 
   useEffect(() => {
@@ -95,76 +95,135 @@ export default function Rooms() {
     return () => controller.abort();
   }, []);
 
-  const visibleRooms = apiRooms.length > 0 ? apiRooms : rooms;
+  useEffect(() => {
+    const background = backgroundRef.current;
+    if (!background) return;
+
+    let frame = 0;
+
+    const updateBackground = () => {
+      const scrollRange = Math.max(window.innerHeight * 0.8, 700);
+      const progress = Math.min(Math.max(window.scrollY / scrollRange, 0), 1);
+      const panX = progress * 42;
+      const panY = progress * 58;
+      const scale = 1.08 + progress * 0.06;
+
+      background.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+      background.style.filter = `brightness(${0.72 + progress * 0.14}) saturate(${1 + progress * 0.12})`;
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        updateBackground();
+        frame = 0;
+      });
+    };
+
+    updateBackground();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  const visibleRooms = (apiRooms.length > 0 ? apiRooms : rooms).slice(0, 3);
 
   return (
-    <section id="rooms" className="py-28 bg-gradient-to-b from-white to-green-50/40">
+    <section id="rooms" className="relative overflow-hidden py-28 bg-[#07131f]">
+      <div
+        ref={backgroundRef}
+        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-95 will-change-transform transition-[transform,filter] duration-150 ease-out"
+        style={{ backgroundImage: 'url("/forest.png")' }}
+      />
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(4,11,20,0.62)_0%,rgba(7,19,31,0.28)_24%,rgba(7,19,31,0.12)_58%,rgba(7,19,31,0.72)_100%)]" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.11),transparent_32%),radial-gradient(circle_at_80%_15%,rgba(168,85,247,0.08),transparent_26%)]" />
+
       <Container>
-        <SectionTitle
-          label="Our Rooms"
-          title="Choose Your Perfect Stay"
-          subtitle="All rooms include complimentary breakfast, high-speed Wi-Fi, and stunning views of the surrounding hills."
-        />
-
-        {/* Social proof mini-bar */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 animate-fade-up">
-          {[
-            { icon: "⭐", text: "4.9 avg rating" },
-            { icon: "🧑‍🤝‍🧑", text: "500+ happy guests" },
-            { icon: "🔁", text: "98% would return" },
-          ].map(({ icon, text }) => (
-            <span key={text} className="inline-flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <span className="text-base">{icon}</span>
-              {text}
+        <div className="relative z-10">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-teal-100 backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-300 opacity-50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-300" />
+              </span>
+              Our Rooms
             </span>
-          ))}
-        </div>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {visibleRooms.map((room, i) => {
-            const isApiRoom = "_id" in room;
-            const title = isApiRoom ? room.name : room.title;
-            const price = isApiRoom
-              ? `₹${room.price.toLocaleString("en-IN")}`
-              : room.price;
+            <h2 className="mt-5 text-4xl font-black leading-tight tracking-tight text-white drop-shadow-md md:text-5xl">
+              Choose Your Perfect Stay
+            </h2>
 
-            return (
-              <div
-                key={isApiRoom ? room._id : room.title}
-                className="animate-fade-up"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <RoomCard
-                  {...room}
-                  roomId={isApiRoom ? room._id : undefined}
-                  title={title}
-                  price={price}
-                  image={room.image}
-                  description={room.description}
-                  bookHref={isApiRoom ? `/booking?roomId=${room._id}#payment` : "/rooms"}
-                />
-              </div>
-            );
-          })}
-        </div>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
+              All rooms include complimentary breakfast, high-speed Wi-Fi, and stunning views of the surrounding hills.
+            </p>
+          </div>
 
-        {/* Bottom CTAs */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/rooms"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-green-800 to-emerald-600 text-white font-semibold text-sm shadow-lg shadow-green-900/25 hover:from-green-700 hover:to-emerald-500 hover:scale-105 active:scale-95 transition-all duration-300"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-            View All Rooms & Availability
-          </Link>
-          <a
-            href="#contact"
-            className="text-sm text-gray-400 hover:text-green-700 font-semibold hover:underline underline-offset-2 transition-colors"
-          >
-            Need a custom package? Contact us →
-          </a>
+          {/* Social proof mini-bar */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 animate-fade-up">
+            {[
+              { icon: "⭐", text: "4.9 avg rating" },
+              { icon: "🧑‍🤝‍🧑", text: "500+ happy guests" },
+              { icon: "🔁", text: "98% would return" },
+            ].map(({ icon, text }) => (
+              <span key={text} className="inline-flex items-center gap-2 text-sm font-medium text-slate-300">
+                <span className="text-base">{icon}</span>
+                {text}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {visibleRooms.map((room, i) => {
+              const isApiRoom = "_id" in room;
+              const title = isApiRoom ? room.name : room.title;
+              const price = isApiRoom
+                ? `₹${room.price.toLocaleString("en-IN")}`
+                : room.price;
+
+              return (
+                <div
+                  key={isApiRoom ? room._id : room.title}
+                  className="animate-fade-up"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <RoomCard
+                    {...room}
+                    roomId={isApiRoom ? room._id : undefined}
+                    title={title}
+                    price={price}
+                    image={room.image}
+                    description={room.description}
+                    bookHref={isApiRoom ? `/booking?roomId=${room._id}#payment` : "/rooms"}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom CTAs */}
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/rooms"
+              className="animate-button-in inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/14 px-8 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.22)] backdrop-blur-xl transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:bg-white/18 active:scale-95"
+              style={{ animationDelay: "0.1s" }}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+              View All Rooms & Availability
+            </Link>
+            <a
+              href="#contact"
+              className="text-sm font-semibold text-teal-100/70 underline-offset-2 transition-colors hover:text-white hover:underline"
+            >
+              Need a custom package? Contact us →
+            </a>
+          </div>
         </div>
       </Container>
     </section>

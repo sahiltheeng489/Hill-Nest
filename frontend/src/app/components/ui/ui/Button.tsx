@@ -15,13 +15,13 @@ export default function Button({
 }: ButtonProps) {
   const variants = {
     primary:
-      "bg-gradient-to-r from-green-800 to-emerald-600 text-white shadow-lg shadow-green-900/25 hover:shadow-xl hover:shadow-green-900/35 hover:from-green-700 hover:to-emerald-500",
+      "border border-white/20 bg-white/14 text-white shadow-[0_16px_34px_rgba(2,6,23,0.18)] backdrop-blur-xl hover:bg-white/18 hover:shadow-[0_20px_40px_rgba(2,6,23,0.22)]",
     secondary:
-      "border-2 border-white/70 text-white backdrop-blur-sm hover:bg-white hover:text-green-800",
+      "border border-white/16 bg-white/10 text-white backdrop-blur-md hover:bg-white/16",
     ghost:
-      "bg-transparent text-green-700 hover:bg-green-50",
+      "bg-transparent text-slate-200 hover:bg-white/8",
     outline:
-      "border-2 border-green-700 text-green-700 hover:bg-green-700 hover:text-white",
+      "border border-white/18 text-slate-100 bg-white/5 hover:bg-white/10",
   };
 
   const sizes = {
@@ -32,7 +32,7 @@ export default function Button({
 
   return (
     <button
-      className={`font-semibold tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 inline-flex items-center justify-center gap-2 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`animate-button-in font-semibold tracking-wide transition-all duration-300 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 inline-flex items-center justify-center gap-2 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

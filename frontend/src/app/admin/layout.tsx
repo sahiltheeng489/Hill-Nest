@@ -45,32 +45,32 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   if (state.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[linear-gradient(180deg,#04151A,#092828)] text-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm">Loading admin panel…</p>
+          <div className="w-10 h-10 rounded-full border-4 border-[#6F9487] border-t-transparent animate-spin" />
+          <p className="text-sm text-white/60">Loading admin panel…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[linear-gradient(180deg,#04151A,#092828)] text-white">
 
       {/* ── Sidebar ──────────────────────────────────────────────── */}
       <aside
         className={`flex-shrink-0 flex flex-col transition-all duration-300 ${state.sidebarOpen ? 'w-64' : 'w-16'}`}
-        style={{ background: '#0f172a' }}
+        style={{ background: 'linear-gradient(180deg, rgba(4,21,26,0.96), rgba(9,40,40,0.88))' }}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-4 border-b border-white/10 gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
+        <div className="h-16 flex items-center gap-3 border-b border-white/10 px-4">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#163E3C] to-[#6F9487]">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
           </div>
           {state.sidebarOpen && (
             <div>
-              <p className="text-white font-bold text-sm leading-none">HillNest</p>
-              <p className="text-white/40 text-xs">Admin Portal</p>
+              <p className="text-sm font-bold leading-none text-white">HillNest</p>
+              <p className="text-xs text-white/40">Admin Portal</p>
             </div>
           )}
         </div>
@@ -86,8 +86,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
                 title={!state.sidebarOpen ? item.label : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group
                   ${isActive
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-white/60 hover:bg-white/10 hover:text-white'
+                    ? 'bg-white/12 text-white shadow-sm backdrop-blur-md'
+                    : 'text-white/60 hover:bg-white/8 hover:text-white'
                   }`}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
@@ -98,19 +98,19 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User at bottom */}
-        <div className="p-3 border-t border-white/10">
+        <div className="border-t border-white/10 p-3">
           <div className={`flex items-center gap-3 ${!state.sidebarOpen ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#163E3C] to-[#6F9487] text-xs font-bold text-white">
               {initials}
             </div>
             {state.sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-white text-xs font-semibold truncate">{displayName}</p>
-                <p className="text-white/40 text-xs truncate">{user?.email}</p>
+                <p className="truncate text-xs font-semibold text-white">{displayName}</p>
+                <p className="truncate text-xs text-white/40">{user?.email}</p>
               </div>
             )}
             {state.sidebarOpen && (
-              <button onClick={handleLogout} className="text-white/40 hover:text-red-400 transition-colors" title="Logout">
+              <button onClick={handleLogout} className="text-white/40 transition-colors hover:text-red-200" title="Logout">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
               </button>
             )}
@@ -122,28 +122,28 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Top bar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
+        <header className="h-16 flex flex-shrink-0 items-center justify-between border-b border-white/10 bg-[linear-gradient(180deg,rgba(4,21,26,0.7),rgba(9,40,40,0.5))] px-4 backdrop-blur-2xl">
           <div className="flex items-center gap-3">
-            <button onClick={toggleSidebar} className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+            <button onClick={toggleSidebar} className="rounded-lg p-2 text-white/45 transition-colors hover:bg-white/8 hover:text-white">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <nav className="flex items-center gap-2 text-sm">
-              <Link href="/admin" className="text-gray-400 hover:text-gray-600 transition-colors">Admin</Link>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-700 font-medium">{currentPage}</span>
+              <Link href="/admin" className="text-white/45 transition-colors hover:text-white">Admin</Link>
+              <span className="text-white/20">/</span>
+              <span className="font-medium text-white/80">{currentPage}</span>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="relative hidden sm:block">
-              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              <input type="text" placeholder="Quick search…" className="pl-9 pr-4 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 w-48" />
+              <svg className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-white/35" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input type="text" placeholder="Quick search…" className="w-48 rounded-lg border border-white/10 bg-white/8 pl-9 pr-4 py-1.5 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#6F9487]/50 focus:ring-2 focus:ring-teal-200/10 backdrop-blur-md" />
             </div>
-            <button className="relative p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+            <button className="relative rounded-lg p-2 text-white/45 transition-colors hover:bg-white/8 hover:text-white">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#163E3C] to-[#6F9487] text-xs font-bold text-white">
               {initials}
             </div>
           </div>
