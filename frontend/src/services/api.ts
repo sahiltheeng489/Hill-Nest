@@ -2,7 +2,7 @@ const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
 const normalizedApiBaseUrl = (() => {
   if (!rawApiBaseUrl) {
-    return "/api";
+    return process.env.NODE_ENV === "production" ? "/_/backend/api" : "/api";
   }
 
   const withoutTrailingSlash = rawApiBaseUrl.replace(/\/+$/, "");
