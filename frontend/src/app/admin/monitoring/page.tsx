@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { getHealthStatus, getSystemMetrics } from '../../../services/adminApi';
 
-function HealthDot({ status }: { status: string }) {
+function HealthDot({ status }: { status?: string }) {
   const colors: Record<string, string> = { healthy: 'bg-cyan-400', degraded: 'bg-amber-400', down: 'bg-red-500' };
-  return <span className={`inline-block w-2.5 h-2.5 rounded-full ${colors[status] ?? 'bg-gray-300'}`} />;
+  return <span className={`inline-block w-2.5 h-2.5 rounded-full ${colors[status ?? ''] ?? 'bg-gray-300'}`} />;
 }
 
 type HealthServiceInfo = {
@@ -77,9 +77,9 @@ export default function MonitoringPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-gray-900">Service Health</h2>
           {health && (
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${health.overall === 'healthy' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}`}>
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${health.overall === 'healthy' ? 'bg-cyan-100 text-cyan-700' : health.overall === 'down' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
               <HealthDot status={health.overall} />
-              {health.overall === 'healthy' ? 'All Systems Operational' : 'Degraded Performance'}
+              {health.overall === 'healthy' ? 'All Systems Operational' : health.overall === 'down' ? 'Service Interrupted' : 'Degraded Performance'}
             </div>
           )}
         </div>

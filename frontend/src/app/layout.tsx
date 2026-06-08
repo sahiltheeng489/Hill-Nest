@@ -37,7 +37,7 @@ export default function RootLayout({
       className={`${openSans.variable} h-full antialiased`}
       style={{ colorScheme: "light", background: "#ffffff" }}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="borderless-ui min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

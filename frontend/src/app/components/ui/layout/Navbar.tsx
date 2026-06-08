@@ -22,25 +22,60 @@ export default function Navbar() {
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("home");
+  const isHome = pathname === "/";
 
   useEffect(() => {
     let frame = 0;
+    const sectionIds = navLinks.map((link) => link.href.replace("#", ""));
+
+    const syncActiveSection = () => {
+      if (!isHome) return;
+
+      const probeY = window.innerHeight * 0.45;
+      let nextSection = sectionIds[0] ?? "home";
+      let nearestSection = nextSection;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= probeY && rect.bottom >= probeY) {
+          nextSection = id;
+          break;
+        }
+
+        const distance = Math.abs(rect.top - probeY);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestSection = id;
+        }
+      }
+
+      const resolvedSection = nextSection ?? nearestSection;
+      setActiveSection((current) => (current === resolvedSection ? current : resolvedSection));
+    };
+
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         const y = window.scrollY;
         setScrollY(y);
         setScrolled(y > 20);
+        syncActiveSection();
         frame = 0;
       });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [isHome]);
 
   useEffect(() => {
     const t = setTimeout(() => setUser(getStoredUser()), 0);
@@ -74,25 +109,6 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const isHome = pathname === "/";
-
-  useEffect(() => {
-    if (!isHome) return;
-    const ids = navLinks.map(n => n.href.replace("#", ""));
-    const observers: IntersectionObserver[] = [];
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { threshold: 0.35 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, [isHome]);
-
   const getNavHref = (href: string) => (href.startsWith("#") ? (isHome ? href : `/${href}`) : href);
   const dashboardHref = user?.role === "admin" ? "/admin" : "/user";
   const glassProgress = Math.min(scrollY / 140, 1);
@@ -112,9 +128,6 @@ export default function Navbar() {
   const navBackground = isTransparent
     ? `rgba(3, 7, 18, ${0.26 + glassProgress * 0.06})`
     : `rgba(8, 15, 29, ${0.42 + glassProgress * 0.08})`;
-  const navBorder = isTransparent
-    ? `rgba(255, 255, 255, ${0.16 + glassProgress * 0.06})`
-    : `rgba(255, 255, 255, ${0.34 + glassProgress * 0.06})`;
   const navShadow = isTransparent
     ? `0 ${10 + glassProgress * 12}px ${30 + glassProgress * 24}px rgba(2, 6, 23, ${0.1 + glassProgress * 0.16})`
     : `0 ${10 + glassProgress * 12}px ${28 + glassProgress * 24}px rgba(15, 23, 42, ${0.08 + glassProgress * 0.1})`;
@@ -122,11 +135,9 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[90] border-b border-t transition-all duration-500 ease-out ${isTransparent ? "text-white" : "text-slate-100"}`}
+      className={`fixed top-0 left-0 right-0 z-[90] transition-all duration-500 ease-out ${isTransparent ? "text-white" : "text-slate-100"}`}
       style={{
         backgroundColor: navBackground,
-        borderBottomColor: navBorder,
-        borderTopColor: "rgba(255,255,255,0.03)",
         backdropFilter: navBlur,
         WebkitBackdropFilter: navBlur,
         boxShadow: navShadow,
@@ -168,14 +179,14 @@ export default function Navbar() {
                   key={label}
                   href={getNavHref(href)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`group inline-flex items-center border-b px-1.5 py-2 transition-all duration-200 backdrop-blur-md ${
+                  className={`group inline-flex items-center px-1.5 py-2 transition-all duration-200 ${
                     isTransparent
                       ? isActive
-                        ? "border-teal-200/70 text-white"
-                        : "border-transparent text-white/72 hover:border-white/30 hover:text-white"
+                        ? "text-white"
+                        : "text-white/72 hover:text-white"
                       : isActive
-                        ? "border-teal-400/70 text-slate-100"
-                        : "border-transparent text-slate-300 hover:border-teal-300/35 hover:text-slate-100"
+                        ? "text-slate-100"
+                        : "text-slate-300 hover:text-slate-100"
                   }`}
                 >
                   <span className="relative">

@@ -11,13 +11,16 @@ export type FullscreenGallerySlide = {
 
 type FullscreenGalleryProps = {
   slides: FullscreenGallerySlide[];
+  showRailControls?: boolean;
 };
 
-export default function FullscreenGallery({ slides }: FullscreenGalleryProps) {
+export default function FullscreenGallery({ slides, showRailControls = true }: FullscreenGalleryProps) {
   const sectionRefs = useRef<Array<HTMLElement | null>>([]);
   const railDraggingRef = useRef(false);
   const activeIndexRef = useRef(0);
+  const slideRatiosRef = useRef<number[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isRailVisible, setIsRailVisible] = useState(false);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -25,17 +28,33 @@ export default function FullscreenGallery({ slides }: FullscreenGalleryProps) {
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
+    slideRatiosRef.current = Array.from({ length: slides.length }, () => 0);
 
     sectionRefs.current.forEach((section, index) => {
       if (!section) return;
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveIndex(index);
+          slideRatiosRef.current[index] = entry.intersectionRatio;
+
+          const nextVisible = slideRatiosRef.current.some((ratio) => ratio >= 0.7);
+          setIsRailVisible((current) => (current === nextVisible ? current : nextVisible));
+
+          let nextActiveIndex = 0;
+          let highestRatio = -1;
+
+          slideRatiosRef.current.forEach((ratio, candidateIndex) => {
+            if (ratio > highestRatio) {
+              highestRatio = ratio;
+              nextActiveIndex = candidateIndex;
+            }
+          });
+
+          if (highestRatio >= 0.7) {
+            setActiveIndex((current) => (current === nextActiveIndex ? current : nextActiveIndex));
           }
         },
-        { threshold: 0.6 },
+        { threshold: [0, 0.7, 1] },
       );
 
       observer.observe(section);
@@ -78,7 +97,14 @@ export default function FullscreenGallery({ slides }: FullscreenGalleryProps) {
     <div className="relative min-h-screen scroll-smooth snap-y snap-mandatory bg-[#04151a] text-white">
       <div className="pointer-events-none fixed inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(111,148,135,0.12),transparent_28%),linear-gradient(180deg,rgba(4,21,26,0.15)_0%,rgba(4,21,26,0.45)_100%)]" />
 
-      <div className="fixed right-3 top-1/2 z-30 -translate-y-1/2 sm:right-4">
+      <div
+        className={`fixed right-3 top-1/2 z-30 -translate-y-1/2 transition-[opacity,transform] duration-180 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform sm:right-4 ${
+          showRailControls && isRailVisible
+            ? "pointer-events-auto translate-x-0 scale-100 opacity-100"
+            : "pointer-events-none translate-x-0 scale-[0.98] opacity-0"
+        }`}
+        aria-hidden={!showRailControls || !isRailVisible}
+      >
         <div
           className="flex flex-col items-center gap-1.5 rounded-full border border-white/10 bg-white/7 px-2 py-2.5 shadow-[0_14px_28px_rgba(2,6,23,0.16)] backdrop-blur-lg"
           onPointerDown={() => {
@@ -132,11 +158,11 @@ export default function FullscreenGallery({ slides }: FullscreenGalleryProps) {
               sizes="100vw"
               className="object-cover"
               style={{
-                transform: isActive ? "scale(1)" : "scale(1.06)",
+                transform: isActive ? "scale(1)" : "scale(1.025)",
                 opacity: isActive ? 1 : 0.92,
                 filter: "blur(0px)",
                 transition:
-                  "transform 900ms ease-in-out, opacity 900ms ease-in-out, filter 900ms ease-in-out",
+                  "transform 650ms cubic-bezier(0.22, 1, 0.36, 1), opacity 650ms cubic-bezier(0.22, 1, 0.36, 1), filter 650ms cubic-bezier(0.22, 1, 0.36, 1)",
                 willChange: "transform, opacity, filter",
               }}
             />

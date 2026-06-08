@@ -1,3 +1,5 @@
+"use client";
+
 import FullscreenGallery from "@/app/components/ui/gallery/FullscreenGallery";
 import Container from "@/app/components/ui/ui/Container";
 import SectionTitle from "@/app/components/ui/ui/SectionTitle";

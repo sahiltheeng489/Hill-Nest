@@ -21,9 +21,9 @@ export default function HomeUserBanner() {
 
   return (
     <div className="mt-12 animate-fade-up delay-600">
-      <div className="glass rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 border border-white/14">
+      <div className="glass rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-xl border border-white/18 bg-white/14 flex items-center justify-center text-white font-bold text-lg tracking-tight backdrop-blur-xl flex-shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-white/14 flex items-center justify-center text-white font-bold text-lg tracking-tight backdrop-blur-xl flex-shrink-0">
           {initial}
         </div>
 
@@ -43,7 +43,7 @@ export default function HomeUserBanner() {
         {/* CTA */}
         <Link
           href={dashboardHref}
-          className="animate-button-in flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/16 bg-white/10 text-white text-sm font-semibold backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/16 active:scale-95"
+          className="animate-button-in flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 text-white text-sm font-semibold backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/16 active:scale-95"
           style={{ animationDelay: "0.1s" }}
         >
           My Dashboard

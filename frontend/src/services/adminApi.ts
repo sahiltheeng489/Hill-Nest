@@ -151,6 +151,30 @@ export interface DashboardStats {
   };
 }
 
+export interface HealthServiceInfo {
+  status: string;
+  latency?: number;
+  message?: string;
+}
+
+export interface HealthStatus {
+  overall?: string;
+  services?: Record<string, HealthServiceInfo>;
+}
+
+export interface RuntimeMetrics {
+  activeSessions?: number;
+  memoryUsed?: number;
+  memoryTotal?: number;
+  uptime?: number;
+  nodeVersion?: string;
+}
+
+export interface MonitoringMetrics {
+  runtime?: RuntimeMetrics;
+  database?: Record<string, string | number>;
+}
+
 // ── Core fetch ─────────────────────────────────────────────────
 
 class ApiError extends Error {
@@ -349,8 +373,12 @@ export async function unblockIp(id: string) { return del<null>(`/security/blocke
 
 // ── Monitoring ────────────────────────────────────────────────
 
-export async function getHealthStatus() { return (await get<unknown>('/monitoring/health')).data; }
-export async function getSystemMetrics() { return (await get<unknown>('/monitoring/metrics')).data; }
+export async function getHealthStatus(): Promise<HealthStatus> {
+  return (await get<HealthStatus>('/monitoring/health')).data;
+}
+export async function getSystemMetrics(): Promise<MonitoringMetrics> {
+  return (await get<MonitoringMetrics>('/monitoring/metrics')).data;
+}
 
 // ── Notifications ─────────────────────────────────────────────
 

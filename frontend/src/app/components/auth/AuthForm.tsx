@@ -80,7 +80,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const Shell = (
     <main className={shellClass}>
       <Image
-        src="/cabin2.png"
+        src="/cabin2.webp"
         alt="HillNest cabin"
         fill
         priority

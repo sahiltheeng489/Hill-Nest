@@ -21,19 +21,19 @@ const fallbackRooms: Room[] = [
   {
     name: "Deluxe Valley Room",
     price: 2999,
-    image: "/room-deluxe.png",
+    image: "/room-deluxe.webp",
     description: "Wake up to peaceful valley views, warm wooden interiors, Wi-Fi, and breakfast included.",
   },
   {
     name: "Premium Family Suite",
     price: 4499,
-    image: "/room-suite.png",
+    image: "/room-suite.webp",
     description: "A spacious family suite with a private lounge, mountain-facing balcony, and extra comfort.",
   },
   {
     name: "Garden View Room",
     price: 2499,
-    image: "/room-garden.png",
+    image: "/room-garden.webp",
     description: "A cozy garden-facing room for couples and solo travelers looking for a calm retreat.",
   },
 ];
@@ -61,6 +61,7 @@ function RoomCardSkeleton() {
 }
 
 export default function RoomsPage() {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const backgroundRef = useRef<HTMLDivElement | null>(null);
   const [queryString] = useState(() =>
     typeof window === "undefined" ? "" : window.location.search.replace(/^\?/, "")
@@ -99,20 +100,25 @@ export default function RoomsPage() {
   }, [queryString]);
 
   useEffect(() => {
+    const section = sectionRef.current;
     const background = backgroundRef.current;
-    if (!background) return;
+    if (!section || !background) return;
 
     let frame = 0;
 
     const updateBackground = () => {
-      const scrollRange = Math.max(window.innerHeight * 0.7, 560);
-      const progress = Math.min(Math.max(window.scrollY / scrollRange, 0), 1);
-      const panX = progress * 34;
-      const panY = progress * 44;
-      const scale = 1.06 + progress * 0.045;
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollStart = Math.max(sectionTop - viewportHeight, 0);
+      const scrollEnd = sectionTop + sectionHeight;
+      const progress = Math.min(Math.max((window.scrollY - scrollStart) / (scrollEnd - scrollStart), 0), 1);
+      const panX = progress * 28;
+      const panY = progress * 52;
+      const scale = 1.03 + progress * 0.05;
 
       background.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
-      background.style.filter = `brightness(${0.62 + progress * 0.12}) saturate(${0.9 + progress * 0.16})`;
+      background.style.filter = `brightness(${0.78 + progress * 0.08}) saturate(${0.96 + progress * 0.06})`;
     };
 
     const onScroll = () => {
@@ -137,13 +143,12 @@ export default function RoomsPage() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_28%),linear-gradient(180deg,#08111e_0%,#0b1220_58%,#050816_100%)] pt-24 text-slate-100">
+      <main ref={sectionRef} className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_28%),linear-gradient(180deg,#08111e_0%,#0b1220_58%,#050816_100%)] pt-24 text-slate-100">
         <div
           ref={backgroundRef}
-          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-70 will-change-transform transition-[transform,filter] duration-150 ease-out"
-          style={{ backgroundImage: 'url("/forest.png")' }}
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-82 will-change-transform transition-[transform,filter] duration-150 ease-out"
+          style={{ backgroundImage: 'url("/forest.webp")' }}
         />
-        <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(8,17,30,0.58)_0%,rgba(11,18,32,0.42)_18%,rgba(5,8,22,0.9)_18%,rgba(5,8,22,0.98)_100%)]" />
 
         <Container>
           <div className="relative z-10 py-16">

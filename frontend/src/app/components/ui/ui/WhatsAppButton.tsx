@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
       className="fixed bottom-24 right-6 z-[80] group flex items-center gap-3 pointer-events-auto touch-manipulation"
     >
       {/* Tooltip label */}
-      <span className="pointer-events-none whitespace-nowrap rounded-lg border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all duration-300 translate-x-2 backdrop-blur-md group-hover:translate-x-0 group-hover:opacity-100">
+      <span className="pointer-events-none whitespace-nowrap rounded-lg bg-white/8 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all duration-300 translate-x-2 backdrop-blur-md group-hover:translate-x-0 group-hover:opacity-100">
         Chat on WhatsApp
       </span>
 

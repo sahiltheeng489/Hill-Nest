@@ -7,7 +7,7 @@ interface SectionTitleProps {
 export default function SectionTitle({ label, title, subtitle }: SectionTitleProps) {
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-slate-100 backdrop-blur-md">
+      <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-slate-100 backdrop-blur-md">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full rounded-full bg-teal-300/30" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-200" />

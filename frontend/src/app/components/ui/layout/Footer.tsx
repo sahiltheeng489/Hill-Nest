@@ -70,7 +70,7 @@ export default function Footer() {
 
             <div className="relative flex flex-wrap gap-8 items-center justify-between">
               <div className="max-w-lg">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 text-slate-100 text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 mb-5 backdrop-blur-md">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/8 text-slate-100 text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 mb-5 backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-200 inline-block" />
                   Reserve Your Stay
                 </span>
@@ -86,7 +86,7 @@ export default function Footer() {
                 <Link
                   href="/rooms"
                   id="footer-book-btn"
-                  className="animate-button-in inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/14 px-6 py-3.5 font-bold text-sm text-white backdrop-blur-xl transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/18"
+                  className="animate-button-in inline-flex items-center justify-center gap-2 rounded-2xl bg-white/14 px-6 py-3.5 font-bold text-sm text-white backdrop-blur-xl transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/18"
                   style={{ animationDelay: "0.1s" }}
                 >
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -95,7 +95,7 @@ export default function Footer() {
                 <a
                   href="tel:+919876543210"
                   id="footer-call-btn"
-                  className="animate-button-in inline-flex items-center justify-center gap-2 rounded-2xl border border-white/14 bg-white/8 px-6 py-3.5 font-bold text-sm text-slate-100 backdrop-blur-md hover:bg-white/12 hover:-translate-y-0.5 transition-all duration-200 ease-out"
+                  className="animate-button-in inline-flex items-center justify-center gap-2 rounded-2xl bg-white/8 px-6 py-3.5 font-bold text-sm text-slate-100 backdrop-blur-md hover:bg-white/12 hover:-translate-y-0.5 transition-all duration-200 ease-out"
                   style={{ animationDelay: "0.18s" }}
                 >
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.1 1.19 2 2 0 012.08 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l1.45-1.45a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 13.92v3z" /></svg>
@@ -178,8 +178,6 @@ export default function Footer() {
                 </div>
               ))}
 
-              <div className="h-px bg-white/10 my-5" />
-
               <p className="footer-heading">
                 <span className="footer-heading-bar" />
                 Follow Us
@@ -202,7 +200,7 @@ export default function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-white/10 py-6 pb-8 flex flex-wrap gap-3 items-center justify-between">
+          <div className="py-6 pb-8 flex flex-wrap gap-3 items-center justify-between">
             <p className="text-slate-400 text-xs">
               © {new Date().getFullYear()} <span className="text-teal-200 font-semibold">HillNest Homestay</span> · All rights reserved.
             </p>

@@ -71,7 +71,7 @@ export default function Hero() {
       <div
         ref={backgroundRef}
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform transition-[transform,filter] duration-150 ease-out"
-        style={{ backgroundImage: 'url("/hero.png")' }}
+        style={{ backgroundImage: 'url("/hero.webp")' }}
       />
 
       <div className="absolute inset-0 z-0">
@@ -124,22 +124,6 @@ export default function Hero() {
                 </svg>
                 Browse Rooms
               </Link>
-            </div>
-
-            <div className="mt-7 flex flex-wrap items-center gap-5 animate-fade-up delay-400">
-              {[
-                "Free Cancellation",
-                "Breakfast Included",
-                "Panoramic Views",
-                "Free Wi-Fi",
-              ].map((text, index) => (
-                <span key={text} className="animate-button-in flex items-center gap-2 text-sm text-slate-300" style={{ animationDelay: `${0.32 + index * 0.06}s` }}>
-                  <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-teal-500/20 text-xs font-bold text-teal-200">
-                    ✓
-                  </span>
-                  {text}
-                </span>
-              ))}
             </div>
 
             <div className="mt-9 animate-fade-up delay-500">

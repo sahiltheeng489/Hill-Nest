@@ -53,7 +53,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
           roomId={activeRoom._id}
           title={activeRoom.name}
           price={`${"\u20B9"}${activeRoom.price}`}
-          image={activeRoom.image || "img.jpg"}
+          image={activeRoom.image || "img.webp"}
           onBook={onBook}
         />
       </div>
@@ -63,7 +63,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
           <button
             type="button"
             onClick={goToPrev}
-            className="absolute left-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
+            className="absolute left-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
             aria-label="Previous room"
           >
             {"<"}
@@ -71,7 +71,7 @@ export default function RoomSlider({ rooms, onBook }: RoomSliderProps) {
           <button
             type="button"
             onClick={goToNext}
-            className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
+            className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full bg-white/8 text-white shadow-sm backdrop-blur-md hover:bg-white/12"
             aria-label="Next room"
           >
             {">"}

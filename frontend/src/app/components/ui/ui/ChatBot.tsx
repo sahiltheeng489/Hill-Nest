@@ -126,7 +126,7 @@ export default function ChatBot() {
       {open && (
         <div
           id="chatbot-window"
-          className="fixed inset-x-3 bottom-24 z-[80] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(4,21,26,0.94),rgba(9,40,40,0.82))] shadow-[0_24px_80px_rgba(2,6,23,0.38)] pointer-events-auto animate-in backdrop-blur-2xl sm:inset-x-auto sm:right-6 sm:bottom-28 sm:w-[340px] sm:max-h-[520px]"
+          className="fixed inset-x-3 bottom-24 z-[80] flex max-h-[70vh] flex-col overflow-hidden rounded-2xl bg-[linear-gradient(180deg,rgba(4,21,26,0.94),rgba(9,40,40,0.82))] shadow-[0_24px_80px_rgba(2,6,23,0.38)] pointer-events-auto animate-in backdrop-blur-2xl sm:inset-x-auto sm:right-6 sm:bottom-28 sm:w-[340px] sm:max-h-[520px]"
           style={{ animation: "slideUp 0.25s ease-out" }}
         >
           {/* Header */}
@@ -135,7 +135,7 @@ export default function ChatBot() {
               <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-lg">
                 🌿
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#6F9487] rounded-full border-2 border-[#163E3C]" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#6F9487] rounded-full" />
             </div>
             <div className="flex-1">
               <p className="text-white font-semibold text-sm leading-none">HillNest Assistant</p>
@@ -166,7 +166,7 @@ export default function ChatBot() {
                   className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
                     msg.from === "user"
                       ? "bg-gradient-to-r from-[#163E3C] to-[#325F57] text-white rounded-br-none"
-                      : "rounded-bl-none border border-white/10 bg-white/8 text-white/85 backdrop-blur-md"
+                      : "rounded-bl-none bg-white/8 text-white/85 backdrop-blur-md"
                   }`}
                 >
                   {msg.text}
@@ -180,7 +180,7 @@ export default function ChatBot() {
                 <div className="w-6 h-6 rounded-full bg-[#325F57] text-white text-xs flex items-center justify-center mr-2 mt-1 shrink-0">
                   🌿
                 </div>
-                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-none border border-white/10 bg-white/8 px-4 py-3 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-none bg-white/8 px-4 py-3 shadow-sm backdrop-blur-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "0ms" }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "150ms" }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce" style={{ animationDelay: "300ms" }} />
@@ -191,12 +191,12 @@ export default function ChatBot() {
           </div>
 
           {/* Quick replies */}
-          <div className="flex flex-wrap gap-2 border-t border-white/10 bg-white/5 px-4 pb-2">
+          <div className="flex flex-wrap gap-2 bg-white/5 px-4 pb-2">
             {QUICK_REPLIES.map((qr) => (
               <button
                 key={qr}
                 onClick={() => sendMessage(qr)}
-                className="mt-2 rounded-full border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-medium text-white/75 transition-colors hover:bg-white/12"
+                className="mt-2 rounded-full bg-white/8 px-3 py-1.5 text-xs font-medium text-white/75 transition-colors hover:bg-white/12"
               >
                 {qr}
               </button>
@@ -204,14 +204,14 @@ export default function ChatBot() {
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-white/10 bg-white/6 px-3 py-3">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-white/6 px-3 py-3">
             <input
               id="chatbot-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask me anything…"
-              className="flex-1 rounded-xl border border-white/10 bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#6F9487]/50 focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md"
+              className="flex-1 rounded-xl bg-white/8 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-teal-200/15 backdrop-blur-md"
             />
             <button
               type="submit"
